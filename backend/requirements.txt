@@ -1,0 +1,12 @@
+fastapi==0.111.0
+uvicorn==0.30.1
+supabase==2.5.1
+google-generativeai==0.7.1
+groq==0.9.0
+huggingface-hub==0.23.4
+resend==0.8.0
+stripe==10.1.0
+posthog==3.5.0
+sentry-sdk==2.6.0
+python-dotenv==1.0.1
+slowapi==0.1.9
