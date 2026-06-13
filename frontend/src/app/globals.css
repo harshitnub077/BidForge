@@ -1,0 +1,122 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@theme inline {
+  --font-sans: var(--font-inter-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    background-color: #ffffff; /* white */
+    color: #09090b; /* zinc-950 */
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ── Custom Animations ── */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.05) 50%, 
+    rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite linear;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ── Custom Inputs ── */
+.premium-input {
+  @apply w-full bg-white border border-zinc-200 rounded-md px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors duration-200;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.premium-input:focus {
+  @apply outline-none border-black bg-white;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(0, 0, 0, 1);
+}
+
+/* ── Custom Buttons ── */
+.premium-btn {
+  @apply relative overflow-hidden flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200;
+}
+.premium-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease-in-out;
+}
+.premium-btn:hover::before {
+  left: 100%;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* ── Markdown Document Formatting ── */
+.doc-prose {
+  font-family: var(--font-sans);
+  color: #3f3f46; /* zinc-700 */
+  line-height: 1.7;
+}
+.doc-prose h1, .doc-prose h2, .doc-prose h3 {
+  color: #09090b; /* zinc-950 */
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.doc-prose h1 { font-size: 1.5rem; margin-top: 1.5em; margin-bottom: 0.75em; }
+.doc-prose h2 { 
+  font-size: 1.15rem; 
+  margin-top: 1.5em; margin-bottom: 0.75em; 
+  padding-bottom: 0.25em; 
+  border-bottom: 1px solid rgba(0,0,0,0.1); 
+}
+.doc-prose h3 { font-size: 1rem; margin-top: 1.25em; margin-bottom: 0.5em; color: #18181b; }
+.doc-prose p { margin-bottom: 1em; }
+.doc-prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
+.doc-prose li { margin-bottom: 0.5em; }
+.doc-prose strong { font-weight: 600; color: #09090b; }
+.doc-prose hr { border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 2em 0; }
+
+.doc-prose table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  margin: 1.5em 0; font-size: 0.875rem;
+  border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.doc-prose th {
+  background-color: rgba(0,0,0,0.03);
+  font-weight: 500; text-align: left; padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  color: #09090b;
+}
+.doc-prose td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.doc-prose tr:last-child td { border-bottom: none; }
