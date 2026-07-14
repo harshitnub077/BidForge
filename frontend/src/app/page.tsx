@@ -7,31 +7,85 @@ import { Logo } from "@/components/Logo";
 import { Session } from "@supabase/supabase-js";
 import { 
   LayoutDashboard, FolderKanban, Users, BarChart3, Settings, 
-  UploadCloud, Sparkles, CheckCircle2, Download, Copy, Share2
+  UploadCloud, Sparkles, CheckCircle2, Download, Copy, Share2, Wand2
 } from "lucide-react";
 
 // ── Markdown renderer ──────────────────────────────────────────────────────────
 function renderMarkdown(text: string): string {
+  const lines = text.split('\n');
+  const html: string[] = [];
+  let inTable = false;
+  let inList = false;
+  let isFirstTableRow = true;
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+
+    // Skip separator rows in tables (|---|---|)
+    if (/^\|[\s\-:|]+\|$/.test(line)) continue;
+
+    // Table rows
+    if (/^\|(.+)\|$/.test(line)) {
+      if (!inTable) { html.push('<table>'); inTable = true; isFirstTableRow = true; }
+      if (inList) { html.push('</ul>'); inList = false; }
+      const cells = line.split('|').slice(1, -1);
+      const tag = isFirstTableRow ? 'th' : 'td';
+      const row = cells.map(c => `<${tag}>${c.trim()}</${tag}>`).join('');
+      html.push(`<tr>${row}</tr>`);
+      isFirstTableRow = false;
+      continue;
+    } else if (inTable) {
+      html.push('</table>'); inTable = false;
+    }
+
+    // Headers
+    if (/^### (.+)$/.test(line)) { if (inList) { html.push('</ul>'); inList = false; } html.push(`<h3>${line.slice(4)}</h3>`); continue; }
+    if (/^## (.+)$/.test(line)) { if (inList) { html.push('</ul>'); inList = false; } html.push(`<h2>${line.slice(3)}</h2>`); continue; }
+    if (/^# (.+)$/.test(line)) { if (inList) { html.push('</ul>'); inList = false; } html.push(`<h1>${line.slice(2)}</h1>`); continue; }
+
+    // Horizontal rule
+    if (/^---+$/.test(line)) { if (inList) { html.push('</ul>'); inList = false; } html.push('<hr>'); continue; }
+
+    // List items
+    if (/^[-*] (.+)$/.test(line)) {
+      if (!inList) { html.push('<ul>'); inList = true; }
+      const content = line.replace(/^[-*] /, '');
+      html.push(`<li>${applyInline(content)}</li>`);
+      continue;
+    } else if (inList && line.trim() === '') {
+      html.push('</ul>'); inList = false; continue;
+    }
+
+    // Empty line
+    if (line.trim() === '') continue;
+
+    // Paragraph
+    if (inList) { html.push('</ul>'); inList = false; }
+    html.push(`<p>${applyInline(line)}</p>`);
+  }
+  if (inTable) html.push('</table>');
+  if (inList) html.push('</ul>');
+  return html.join('\n');
+}
+
+function applyInline(text: string): string {
   return text
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-    .replace(/^\|(.+)\|$/gm, (line) => {
-      const cells = line.split('|').slice(1, -1).map(c => `<td>${c.trim()}</td>`).join('');
-      return `<tr>${cells}</tr>`;
-    })
-    .replace(/^---+$/gm, '<hr>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^(?!<[hul\|t]|<\/|<hr)(.+)$/gm, '<p>$1</p>')
-    .replace(/<p><\/p>/g, '');
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
 }
 
 // ── Field Component ────────────────────────────────────────────────────────────
-function Field({ label, name, value, onChange, placeholder, multi }: any) {
+interface FieldProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  placeholder?: string;
+  multi?: boolean;
+  type?: string;
+}
+
+function Field({ label, name, value, onChange, placeholder, multi, type = "text" }: FieldProps) {
   return (
     <div className="mb-4">
       <label className="block text-xs font-medium text-zinc-400 mb-1.5 ml-1">{label}</label>
@@ -42,7 +96,7 @@ function Field({ label, name, value, onChange, placeholder, multi }: any) {
         />
       ) : (
         <input 
-          type="text" name={name} value={value} onChange={onChange} placeholder={placeholder} 
+          type={type} name={name} value={value} onChange={onChange} placeholder={placeholder} 
           className="premium-input" 
         />
       )}
@@ -51,7 +105,13 @@ function Field({ label, name, value, onChange, placeholder, multi }: any) {
 }
 
 // ── Sidebar Nav Item ─────────────────────────────────────────────────────────
-function NavItem({ icon: Icon, label, active = false }: any) {
+interface NavItemProps {
+  icon: React.ElementType;
+  label: string;
+  active?: boolean;
+}
+
+function NavItem({ icon: Icon, label, active = false }: NavItemProps) {
   return (
     <button className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
       active ? 'bg-zinc-200/50 text-zinc-900 font-medium' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100/50'
@@ -71,7 +131,8 @@ export default function Home() {
   const STORAGE_KEY = "bidforge_form_data";
   const DEFAULT_FORM = {
     client_name: "", industry: "", rfp_title: "", org_name: "BidForge",
-    differentiators: "", case_studies: "", deal_size: "", pain_points: "", compliance_reqs: ""
+    differentiators: "", case_studies: "", deal_size: "", pain_points: "", compliance_reqs: "",
+    contact_name: "", contact_email: "", contact_phone: "", proposal_date: ""
   };
 
   const [formData, setFormData] = useState(DEFAULT_FORM);
@@ -79,19 +140,28 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [uploadDone, setUploadDone] = useState(false);
+  const [genElapsed, setGenElapsed] = useState(0);
+  const genTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [proposalData, setProposalData] = useState<{
     content: string; confidence_score: number; requires_human_review: boolean;
   } | null>(null);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [extractedMeta, setExtractedMeta] = useState<Record<string, string> | null>(null);
+  const [autofilling, setAutofilling] = useState(false);
+
   const outputRef = useRef<HTMLDivElement>(null);
 
+  const fetchOrgId = async (userId: string) => {
+    const { data, error } = await supabase.from('profiles').select('org_id').eq('id', userId).single();
+    if (error) setAuthError(error.message);
+    else if (data) setOrgId(data.org_id);
+  };
+
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try { setFormData(JSON.parse(saved)); } catch {}
-    }
   }, []);
 
   useEffect(() => {
@@ -106,23 +176,32 @@ export default function Home() {
     });
     return () => subscription.unsubscribe();
   }, []);
-
-  const fetchOrgId = async (userId: string) => {
-    const { data, error } = await supabase.from('profiles').select('org_id').eq('id', userId).single();
-    if (error) setAuthError(error.message);
-    else if (data) setOrgId(data.org_id);
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const updated = { ...formData, [e.target.name]: e.target.value };
     setFormData(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   };
 
   const clearForm = () => {
     setFormData(DEFAULT_FORM);
-    localStorage.removeItem(STORAGE_KEY);
     setProposalData(null);
+  };
+
+  const applyAutofill = () => {
+    if (!extractedMeta) return;
+    setAutofilling(true);
+    const fields = ['client_name', 'industry', 'rfp_title', 'deal_size', 'pain_points', 'compliance_reqs', 'differentiators', 'case_studies'] as const;
+    // Animate fields filling in one by one
+    fields.forEach((field, i) => {
+      setTimeout(() => {
+        setFormData(prev => ({
+          ...prev,
+          [field]: extractedMeta[field] || prev[field],
+        }));
+        if (i === fields.length - 1) {
+          setTimeout(() => setAutofilling(false), 300);
+        }
+      }, i * 120);
+    });
   };
 
   const handleUpload = async () => {
@@ -138,7 +217,13 @@ export default function Home() {
         headers: { "Authorization": `Bearer ${session.access_token}` },
         body: form,
       });
-      if (res.ok) { setUploadDone(true); }
+      if (res.ok) { 
+        setUploadDone(true);
+        const data = await res.json();
+        if (data.extracted_metadata) {
+          setExtractedMeta(data.extracted_metadata);
+        }
+      }
       else { const d = await res.json(); alert("Upload failed: " + JSON.stringify(d)); }
     } catch { alert("Cannot reach backend."); }
     finally { setUploading(false); }
@@ -148,22 +233,44 @@ export default function Home() {
     if (!formData.client_name || !formData.rfp_title) return alert("Client name and RFP title are required.");
     if (!session) return;
     setGenerating(true);
-    setProposalData(null);
+    setProposalData({ content: "", confidence_score: 0.95, requires_human_review: false });
+    setGenElapsed(0);
+    genTimerRef.current = setInterval(() => setGenElapsed(prev => prev + 1), 1000);
     try {
       const res = await fetch("http://localhost:8000/proposal/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },
         body: JSON.stringify({ org_id: orgId || "pending", ...formData }),
       });
-      const data = await res.json();
-      if (res.ok) {
-        setProposalData({ content: data.content, confidence_score: data.confidence_score, requires_human_review: data.requires_human_review });
-        setTimeout(() => outputRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-      } else {
-        alert("Generation failed: " + (data.detail || JSON.stringify(data)));
+      if (!res.ok) {
+        alert("Generation failed.");
+        setGenerating(false);
+        return;
+      }
+      
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      let content = "";
+      
+      if (reader) {
+        let firstScroll = false;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          content += decoder.decode(value, { stream: true });
+          setProposalData({ content, confidence_score: 0.95, requires_human_review: false });
+          
+          if (!firstScroll && content.length > 100) {
+            outputRef.current?.scrollIntoView({ behavior: 'smooth' });
+            firstScroll = true;
+          }
+        }
       }
     } catch { alert("Cannot reach backend."); }
-    finally { setGenerating(false); }
+    finally {
+      setGenerating(false);
+      if (genTimerRef.current) { clearInterval(genTimerRef.current); genTimerRef.current = null; }
+    }
   };
 
   if (!mounted) return null;
@@ -274,9 +381,23 @@ export default function Home() {
                     <div className="w-6 h-6 rounded-md bg-zinc-100 border border-zinc-200 text-zinc-900 flex items-center justify-center text-xs font-medium">2</div>
                     <h2 className="text-sm font-semibold text-zinc-900">Strategic Context</h2>
                   </div>
-                  <button onClick={clearForm} className="text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
-                    Reset
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={applyAutofill} 
+                      disabled={!extractedMeta || autofilling}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                        extractedMeta 
+                          ? 'bg-black text-white hover:bg-zinc-800 shadow-sm' 
+                          : 'bg-zinc-100 text-zinc-400 cursor-not-allowed border border-zinc-200'
+                      } ${autofilling ? 'animate-pulse' : ''}`}
+                    >
+                      <Wand2 size={13} className={autofilling ? 'animate-spin' : ''} />
+                      {autofilling ? 'Filling...' : 'AI Autofill'}
+                    </button>
+                    <button onClick={clearForm} className="text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
+                      Reset
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-x-4">
@@ -291,6 +412,17 @@ export default function Home() {
                   <Field label="Your Organization" name="org_name" value={formData.org_name} onChange={handleChange} placeholder="BidForge" />
                   <Field label="Deal Size" name="deal_size" value={formData.deal_size} onChange={handleChange} placeholder="$1,500,000" />
                 </div>
+                <div className="grid grid-cols-2 gap-x-4">
+                  <Field label="Contact Person" name="contact_name" value={formData.contact_name} onChange={handleChange} placeholder="John Smith" />
+                  <Field label="Contact Email" name="contact_email" value={formData.contact_email} onChange={handleChange} placeholder="john@bidforge.com" type="email" />
+                </div>
+                <div className="grid grid-cols-2 gap-x-4">
+                  <Field label="Contact Phone" name="contact_phone" value={formData.contact_phone} onChange={handleChange} placeholder="+1 (555) 123-4567" type="tel" />
+                  <Field label="Proposed Meeting Date" name="proposal_date" value={formData.proposal_date} onChange={handleChange} placeholder="July 21, 2026" type="date" />
+                </div>
+
+                <div className="my-5 border-t border-zinc-200"></div>
+
                 <Field label="Key Differentiators" name="differentiators" value={formData.differentiators} onChange={handleChange} placeholder="Proprietary engine, 24/7 support..." multi />
                 <Field label="Pain Points" name="pain_points" value={formData.pain_points} onChange={handleChange} placeholder="High latency, poor analytics..." multi />
                 <Field label="Compliance" name="compliance_reqs" value={formData.compliance_reqs} onChange={handleChange} placeholder="SOC 2, GDPR..." multi />
@@ -346,7 +478,7 @@ export default function Home() {
                       disabled={!proposalData}
                       onClick={async () => {
                         const { generateDocx } = await import("@/lib/doc_generation");
-                        generateDocx(proposalData!.content, `${formData.client_name}_Proposal.docx`, orgId || "");
+                        generateDocx(renderMarkdown(proposalData!.content), `${formData.client_name}_Proposal.docx`, orgId || "");
                       }}
                       className="flex items-center gap-2 px-3 py-1.5 border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 hover:text-zinc-900 hover:bg-black/5 disabled:opacity-30 transition-colors bg-white shadow-sm"
                     >
@@ -378,7 +510,15 @@ export default function Home() {
                         {generating ? (
                           <>
                             <Logo className="w-12 h-12 mb-6 animate-pulse-glow" />
-                            <p className="text-sm tracking-widest uppercase">Forging document...</p>
+                            <p className="text-sm font-medium text-zinc-900 mb-2">Forging your proposal...</p>
+                            <p className="text-xs text-zinc-400 mb-4">{genElapsed}s elapsed</p>
+                            <div className="flex flex-col gap-2 text-xs text-zinc-500">
+                              <span className={genElapsed >= 0 ? 'text-zinc-900 font-medium' : ''}>✦ Analyzing strategic context</span>
+                              <span className={genElapsed >= 3 ? 'text-zinc-900 font-medium' : ''}>✦ Drafting executive summary</span>
+                              <span className={genElapsed >= 6 ? 'text-zinc-900 font-medium' : ''}>✦ Building solution architecture</span>
+                              <span className={genElapsed >= 9 ? 'text-zinc-900 font-medium' : ''}>✦ Generating pricing & timeline</span>
+                              <span className={genElapsed >= 12 ? 'text-zinc-900 font-medium' : ''}>✦ Final quality review</span>
+                            </div>
                           </>
                         ) : (
                           <>

@@ -1,0 +1,26 @@
+REQUEST FOR PROPOSAL (RFP)
+Project Name: Cloud Infrastructure Modernization
+Company: GlobalTech Innovations
+Date: July 15, 2026
+
+1. Introduction
+GlobalTech Innovations is seeking a strategic partner to modernize our legacy on-premise infrastructure. We are transitioning to a cloud-native architecture to improve scalability, reduce operational costs, and enhance our disaster recovery capabilities.
+
+2. Scope of Work
+- Migration of 50+ legacy applications to the cloud (AWS or GCP).
+- Setup of a secure, compliant cloud networking environment (SOC 2 and GDPR compliant).
+- Implementation of automated CI/CD pipelines.
+- 24/7 monitoring and managed support for the first 12 months.
+
+3. Key Pain Points
+- Our current infrastructure experiences high latency during peak global traffic hours.
+- We lack automated scaling, which leads to unnecessary downtime.
+- Existing disaster recovery processes are manual and slow.
+
+4. Requirements
+- The vendor must have a proven track record in enterprise cloud migrations.
+- The proposed solution must guarantee 99.99% uptime.
+- Migration must be completed within a 6-month timeframe with zero data loss.
+
+5. Proposal Guidelines
+Please submit a proposal outlining your technical approach, implementation timeline, security framework, and a detailed pricing breakdown.

@@ -19,8 +19,8 @@ export default function Auth() {
         options: { redirectTo: window.location.origin }
       });
       if (error) throw error;
-    } catch (e: any) {
-      setError(e.message); setLoading(false);
+    } catch (e: unknown) {
+      setError((e as Error).message); setLoading(false);
     }
   };
 
@@ -36,8 +36,8 @@ export default function Auth() {
         if (error) throw error;
         setError('Check your email for a confirmation link.');
       }
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError((e as Error).message);
     } finally {
       setLoading(false);
     }

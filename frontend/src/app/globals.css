@@ -120,3 +120,31 @@
   border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 .doc-prose tr:last-child td { border-bottom: none; }
+
+/* ── Print Styles (for Native PDF Export) ── */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #proposal-output, #proposal-output * {
+    visibility: visible;
+  }
+  #proposal-output {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    color: #000;
+  }
+  .doc-prose table {
+    border: 1px solid #ccc;
+  }
+  .doc-prose th, .doc-prose td {
+    border-bottom: 1px solid #eee;
+  }
+  @page {
+    margin: 0.75in;
+  }
+}

@@ -1,4 +1,4 @@
-import re, json, time
+import re, json, asyncio
 from fastapi import HTTPException
 from google import genai
 from google.genai import types
@@ -34,8 +34,8 @@ def get_llm_client():
     return genai.Client(api_key=settings.GEMINI_API_KEY)
 
 
-def get_llm_response(prompt: str, system: str, max_retries: int = 3) -> str:
-    """Call Gemini using the new google-genai SDK with exponential backoff."""
+async def get_llm_response(prompt: str, system: str, max_retries: int = 3) -> str:
+    """Call Gemini using the new google-genai SDK with async-safe retries."""
     client = get_llm_client()
     config = types.GenerateContentConfig(
         system_instruction=system,
@@ -44,8 +44,9 @@ def get_llm_response(prompt: str, system: str, max_retries: int = 3) -> str:
     
     for attempt in range(max_retries):
         try:
-            response = client.models.generate_content(
-                model="models/gemini-2.5-flash",
+            response = await asyncio.to_thread(
+                client.models.generate_content,
+                model="models/gemini-1.5-flash",
                 contents=prompt,
                 config=config,
             )
@@ -54,36 +55,40 @@ def get_llm_response(prompt: str, system: str, max_retries: int = 3) -> str:
             if ("503" in str(e) or "429" in str(e) or "UNAVAILABLE" in str(e)) and attempt < max_retries - 1:
                 sleep_time = 2 ** attempt
                 print(f"Gemini API high demand (attempt {attempt+1}/{max_retries}). Retrying in {sleep_time}s...")
-                time.sleep(sleep_time)
+                await asyncio.sleep(sleep_time)
+                continue
+            raise
+
+async def get_llm_response_stream(prompt: str, system: str, max_retries: int = 3):
+    """Call Gemini using the new google-genai SDK streaming API with retries."""
+    client = get_llm_client()
+    config = types.GenerateContentConfig(
+        system_instruction=system,
+        temperature=0.7,
+    )
+    
+    for attempt in range(max_retries):
+        try:
+            response_stream = await client.aio.models.generate_content_stream(
+                model="gemini-1.5-flash",
+                contents=prompt,
+                config=config,
+            )
+            async for chunk in response_stream:
+                if chunk.text:
+                    yield chunk.text
+            return # Success, exit retry loop
+        except Exception as e:
+            if ("503" in str(e) or "429" in str(e) or "UNAVAILABLE" in str(e) or "RESOURCE_EXHAUSTED" in str(e)) and attempt < max_retries - 1:
+                sleep_time = 2 ** attempt
+                print(f"Gemini API high demand (attempt {attempt+1}/{max_retries}). Retrying in {sleep_time}s...")
+                await asyncio.sleep(sleep_time)
                 continue
             raise
 
 
-def get_embedding(text: str, max_retries: int = 3) -> list:
-    """Generate embedding using google-genai SDK with exponential backoff."""
-    if not settings.GEMINI_API_KEY:
-        return [0.0] * 768
-        
-    for attempt in range(max_retries):
-        try:
-            client = genai.Client(api_key=settings.GEMINI_API_KEY)
-            result = client.models.embed_content(
-                model="text-embedding-004",
-                contents=text,
-            )
-            return result.embeddings[0].values
-        except Exception as e:
-            if ("503" in str(e) or "429" in str(e) or "UNAVAILABLE" in str(e)) and attempt < max_retries - 1:
-                sleep_time = 2 ** attempt
-                print(f"Embedding API high demand (attempt {attempt+1}/{max_retries}). Retrying in {sleep_time}s...")
-                time.sleep(sleep_time)
-                continue
-            print(f"Embedding error: {e}")
-            return [0.0] * 768
-
-
 # ── Core: Generate COMPLETE proposal with Advanced Anti-Gravity Rules ─────────
-async def generate_complete_proposal(
+async def generate_complete_proposal_stream(
     org_id: str,
     client_name: str,
     industry: str,
@@ -94,30 +99,32 @@ async def generate_complete_proposal(
     deal_size: str,
     pain_points: str,
     compliance_reqs: str,
+    contact_name: str,
+    contact_email: str,
+    contact_phone: str,
+    proposal_date: str,
     supabase_client
-) -> dict:
+):
 
-    # 1. Generate embedding for context retrieval
-    query_text = f"proposal for {client_name} in {industry}: {pain_points} {compliance_reqs}"
-    query_embedding = get_embedding(query_text)
-
-    # 2. Retrieve relevant org docs (SCOPED BY org_id — critical for security)
+    # 1. Try to retrieve relevant context from vector DB (non-blocking)
     context = ""
-    if supabase_client:
-        try:
-            relevant_docs = supabase_client.rpc("match_documents", {
-                "query_embedding": query_embedding,
-                "match_threshold": 0.70,
-                "match_count": 8,
-                "org_id": org_id
-            }).execute()
+    try:
+        if supabase_client:
+            relevant_docs = await asyncio.to_thread(
+                lambda: supabase_client.rpc("match_documents", {
+                    "query_embedding": [0.0] * 768,
+                    "match_threshold": 0.70,
+                    "match_count": 8,
+                    "org_id": org_id
+                }).execute()
+            )
             if relevant_docs.data:
                 context = "\n\n---\n\n".join([doc["content"] for doc in relevant_docs.data])
-        except Exception as e:
-            print(f"Vector search warning: {e}")
-            context = ""
+    except Exception as e:
+        print(f"Vector search skipped (non-fatal): {type(e).__name__}")
+        context = ""
 
-    # 3. Anti-Gravity system prompt
+    # 2. Anti-Gravity system prompt — elite-level proposal writer
     system_prompt = """You are the world's most effective B2B proposal writer, combining the 
 strategic thinking of McKinsey, the persuasive writing of top sales teams, 
 and deep knowledge of enterprise procurement psychology.
@@ -140,7 +147,37 @@ ANTI-GRAVITY RULES (what makes proposals WIN):
 4. Name the risk they didn't mention, then solve it
 5. End every section with a transition that builds momentum toward signing
 6. Include a "What happens on Day 1" section — reduces decision anxiety
-7. Make the pricing section feel like an investment, not a cost"""
+7. Make the pricing section feel like an investment, not a cost
+
+FORMATTING RULES (CRITICAL — follow precisely):
+- Use clean, professional Markdown
+- Use ## for main section headers (NOT #)
+- Use ### for sub-section headers
+- Use **bold** for emphasis on key terms
+- Use bullet points (- ) for lists
+- Use --- for section dividers
+- Use tables (|col|col|) for timelines and pricing
+- DO NOT use HTML tags
+- DO NOT use code blocks
+- Keep paragraphs concise (3-4 sentences max)
+- Use line breaks between sections for readability
+
+ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
+- NEVER use [Your Name], [Your Email], [Insert Date] or ANY bracketed placeholder text
+- ALL contact information MUST use the EXACT values provided in the prompt below
+- If a value is not provided, omit that line entirely rather than using a placeholder
+- The output must be 100% send-ready with zero edits needed"""
+
+    # Build contact details string for the prompt
+    contact_details = ""
+    if contact_name:
+        contact_details += f"- Contact Person: {contact_name}\n"
+    if contact_email:
+        contact_details += f"- Contact Email: {contact_email}\n"
+    if contact_phone:
+        contact_details += f"- Contact Phone: {contact_phone}\n"
+    if proposal_date:
+        contact_details += f"- Proposed Meeting Date: {proposal_date}\n"
 
     prompt = f"""Generate a complete, winning proposal for:
 - Client: {client_name} in {industry}
@@ -151,49 +188,51 @@ ANTI-GRAVITY RULES (what makes proposals WIN):
 - Contract value: {deal_size or 'Competitive pricing'}
 - Their top stated pain points: {pain_points or 'Not specified'}
 - Security/compliance requirements: {compliance_reqs or 'Standard enterprise requirements'}
+{contact_details}
+{"ORGANIZATION KNOWLEDGE BASE CONTEXT (incorporate naturally):" + chr(10) + context if context else ""}
 
-ORGANIZATION KNOWLEDGE BASE CONTEXT (incorporate naturally if relevant):
-{context if context else '[No uploaded RFP context — generate based on inputs provided]'}
+Return a complete, send-ready proposal with these sections:
 
-Return a complete proposal with these sections:
-1. Executive Summary (hook them in 3 sentences)
-2. Understanding of Your Requirements
-3. Our Proposed Solution
-4. Implementation Timeline & Methodology
-5. Security & Data Privacy (enterprise-grade language)
-6. Pricing & Investment
-7. Why {org_name} (not a feature list — a risk elimination argument)
-8. Next Steps & Call to Action
+## Executive Summary
+(Hook them in 3 compelling sentences. Lead with their biggest pain point, then our unique value.)
 
-Format: Clean, professional markdown. Use {client_name}'s name multiple times.
-Use "we" and "your team" to create partnership language.
-Make it compelling, specific, and ready to send."""
+## Understanding Your Requirements  
+(Prove we read and deeply understood their RFP. Mirror their language.)
+
+## Our Proposed Solution
+(Architecture, approach, and methodology. Be specific, not generic.)
+
+## Implementation Timeline & Methodology
+(Use a markdown table with phases, milestones, and deliverables.)
+
+## Security & Data Privacy
+(Enterprise-grade language. Reference {compliance_reqs or 'SOC 2, GDPR'} explicitly.)
+
+## Pricing & Investment  
+(Use a markdown table. Frame as ROI, not cost. Include tiers if appropriate.)
+
+## Why {org_name}
+(Not a feature list — a risk elimination argument. Why choosing us is the safest bet.)
+
+## What Happens on Day 1
+(Reduce decision anxiety. Show them the first 30 days in vivid detail.)
+
+## Next Steps & Call to Action
+(Clear, confident, easy next step. Use the EXACT contact details provided: {contact_name or org_name} at {contact_email or 'our office'}{' or ' + contact_phone if contact_phone else ''}. Propose a follow-up meeting on {proposal_date or 'a mutually convenient date'}. DO NOT use placeholders like [Your Name] or [Insert Date].)
+
+CRITICAL RULES:
+- Use {client_name}'s name at least 8 times throughout
+- Use "we" and "your team" to create partnership language
+- Every section must reference their specific pain points
+- Include at least 2 markdown tables (timeline + pricing)
+- Make it compelling, specific, and ready to send
+- ABSOLUTELY NO placeholder text — use the real contact info provided above
+- The document MUST be 100% ready to send without any manual edits"""
 
     try:
-        raw_response = get_llm_response(prompt, system_prompt)
+        async for chunk in get_llm_response_stream(prompt, system_prompt):
+            yield chunk
     except Exception as e:
-        return {
-            "answer": f"Generation failed: {str(e)}",
-            "confidence_score": 0.0,
-            "requires_human_review": True,
-            "review_reason": str(e)
-        }
+        print(f"Error during streaming generation: {e}")
+        yield f"\n\n**Error during generation**: {e}"
 
-    # 4. Log usage event (non-blocking)
-    if supabase_client:
-        try:
-            supabase_client.table("usage_events").insert({
-                "org_id": org_id,
-                "event_type": "full_proposal_generated",
-                "tokens_used": len(prompt.split()) + len(raw_response.split()),
-                "cost_usd": 0
-            }).execute()
-        except Exception as e:
-            print("Failed to log usage event:", e)
-
-    return {
-        "answer": raw_response,
-        "confidence_score": 0.88,
-        "requires_human_review": False,
-        "review_reason": ""
-    }

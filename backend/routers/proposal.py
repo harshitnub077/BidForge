@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from core.auth import get_current_user
 from core.config import settings
 from services.vector_db import vector_db
-from services.main_pipeline import generate_complete_proposal
+from services.main_pipeline import generate_complete_proposal_stream
 from supabase import create_client
 import uuid
 
@@ -20,6 +21,10 @@ class ProposalRequest(BaseModel):
     deal_size: str = ""
     pain_points: str = ""
     compliance_reqs: str = ""
+    contact_name: str = ""
+    contact_email: str = ""
+    contact_phone: str = ""
+    proposal_date: str = ""
 
 @router.post("/generate")
 async def generate_proposal(
@@ -37,7 +42,12 @@ async def generate_proposal(
     # We do a best-effort DB check; if profile doesn't exist yet, we still allow
     # generation since the JWT auth already proves their identity.
     try:
-        db_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+        from supabase.client import ClientOptions
+        db_client = create_client(
+            settings.SUPABASE_URL, 
+            settings.SUPABASE_KEY,
+            options=ClientOptions(headers={"Authorization": f"Bearer {current_user['token']}"})
+        )
         profile_resp = db_client.table("profiles").select("org_id").eq("id", user_id).execute()
         
         if profile_resp.data and len(profile_resp.data) > 0:
@@ -55,25 +65,24 @@ async def generate_proposal(
         # Non-blocking — log but don't prevent generation for an authenticated user
         print(f"DB org check warning (non-fatal): {str(e)}")
 
-    # Generate proposal using the Anti-Gravity RAG pipeline
-    result = await generate_complete_proposal(
-        org_id=req.org_id,
-        client_name=req.client_name,
-        industry=req.industry,
-        rfp_title=req.rfp_title,
-        org_name=req.org_name,
-        differentiators=req.differentiators,
-        case_studies=req.case_studies,
-        deal_size=req.deal_size,
-        pain_points=req.pain_points,
-        compliance_reqs=req.compliance_reqs,
-        supabase_client=vector_db.client
+    # Generate proposal using the Anti-Gravity RAG pipeline and stream it directly
+    return StreamingResponse(
+        generate_complete_proposal_stream(
+            org_id=req.org_id,
+            client_name=req.client_name,
+            industry=req.industry,
+            rfp_title=req.rfp_title,
+            org_name=req.org_name,
+            differentiators=req.differentiators,
+            case_studies=req.case_studies,
+            deal_size=req.deal_size,
+            pain_points=req.pain_points,
+            compliance_reqs=req.compliance_reqs,
+            contact_name=req.contact_name,
+            contact_email=req.contact_email,
+            contact_phone=req.contact_phone,
+            proposal_date=req.proposal_date,
+            supabase_client=db_client
+        ),
+        media_type="text/plain"
     )
-    
-    return {
-        "status": "success",
-        "proposal_id": str(uuid.uuid4()),
-        "content": result.get("answer", "Error generating content"),
-        "confidence_score": result.get("confidence_score", 0.0),
-        "requires_human_review": result.get("requires_human_review", True)
-    }

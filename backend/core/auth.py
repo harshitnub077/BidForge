@@ -29,8 +29,8 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Security(securi
         return {
             "user_id": user_id,
             "email": user.email,
-            # org_id will be resolved from the DB in the route handler
-            "org_id": "pending"
+            "org_id": "pending",
+            "token": token
         }
 
     except HTTPException:
