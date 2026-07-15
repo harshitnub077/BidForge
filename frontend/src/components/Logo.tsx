@@ -6,41 +6,17 @@ export function Logo({ className = "w-8 h-8" }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <defs>
-        <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="var(--color-ink)" />
-          <stop offset="100%" stopColor="var(--color-ink-faint)" />
-        </linearGradient>
-        <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="var(--color-ink)" />
-          <stop offset="100%" stopColor="var(--color-accent)" />
-        </linearGradient>
-      </defs>
-
-      {/* Anvil Base */}
+      {/* Forward-pointing Arrow / Chevron (Dark/Light adaptive) */}
       <path 
-        d="M50 80 L30 80 Q20 80 25 95 L40 130 C45 145 60 150 80 150 L120 150 C140 150 155 145 160 130 L175 95 Q180 80 170 80 L150 80" 
-        stroke="url(#silverGrad)" 
-        strokeWidth="12" 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
-        fill="transparent"
+        d="M40 30 L110 30 L180 100 L110 170 L40 170 L110 100 Z" 
+        fill="var(--color-ink)" 
       />
-      {/* Anvil Top Plate */}
+      
+      {/* Interlocking Accent Triangle (Vercel Blue) */}
       <path 
-        d="M20 70 L180 70" 
-        stroke="url(#silverGrad)" 
-        strokeWidth="16" 
-        strokeLinecap="round" 
+        d="M40 30 L110 100 L40 170 Z" 
+        fill="var(--color-accent)" 
       />
-
-      {/* AI Spark */}
-      <g transform="translate(100, 35) scale(0.55)">
-        <path 
-          d="M0 -40 L10 -10 L40 0 L10 10 L0 40 L-10 10 L-40 0 L-10 -10 Z" 
-          fill="url(#sparkGrad)"
-        />
-      </g>
     </svg>
   );
 }
