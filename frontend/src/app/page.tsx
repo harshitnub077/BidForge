@@ -94,7 +94,7 @@ function Field({ label, name, value, onChange, placeholder, multi, type = "text"
   return (
     <motion.div 
       variants={{ hidden: { opacity: 0, y: 5 }, show: { opacity: 1, y: 0 } }}
-      className="flex flex-col gap-2 w-full mb-5"
+      className="flex flex-col gap-2 w-full relative z-10"
     >
       <label htmlFor={name} className="text-[14px] font-medium ml-1" style={{ color: 'var(--color-ink-muted)' }}>
         {label}
@@ -481,33 +481,35 @@ export default function Home() {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-x-4">
-                  <Field label="Client Name" name="client_name" value={formData.client_name} onChange={handleChange} placeholder="Acme Corp" isAiFilling={autofilling} />
-                  <Field label="Industry" name="industry" value={formData.industry} onChange={handleChange} placeholder="SaaS" isAiFilling={autofilling} />
-                </div>
-                <Field label="RFP Title" name="rfp_title" value={formData.rfp_title} onChange={handleChange} placeholder="Q3 Platform Migration" isAiFilling={autofilling} />
-                
-                <div className="my-5" style={{ borderTop: '1px solid var(--color-hairline)' }}></div>
+                <div className="flex flex-col gap-5">
+                  <div className="grid grid-cols-2 gap-x-5">
+                    <Field label="Client Name" name="client_name" value={formData.client_name} onChange={handleChange} placeholder="Acme Corp" isAiFilling={autofilling} />
+                    <Field label="Industry" name="industry" value={formData.industry} onChange={handleChange} placeholder="SaaS" isAiFilling={autofilling} />
+                  </div>
+                  <Field label="RFP Title" name="rfp_title" value={formData.rfp_title} onChange={handleChange} placeholder="Q3 Platform Migration" isAiFilling={autofilling} />
+                  
+                  <div className="my-1" style={{ borderTop: '1px solid var(--color-hairline)' }}></div>
 
-                <div className="grid grid-cols-2 gap-x-4">
-                  <Field label="Your Organization" name="org_name" value={formData.org_name} onChange={handleChange} placeholder="BidForge" />
-                  <Field label="Deal Size" name="deal_size" value={formData.deal_size} onChange={handleChange} placeholder="$1,500,000" isAiFilling={autofilling} />
-                </div>
-                <div className="grid grid-cols-2 gap-x-4">
-                  <Field label="Contact Person" name="contact_name" value={formData.contact_name} onChange={handleChange} placeholder="John Smith" />
-                  <Field label="Contact Email" name="contact_email" value={formData.contact_email} onChange={handleChange} placeholder="john@bidforge.com" type="email" />
-                </div>
-                <div className="grid grid-cols-2 gap-x-4">
-                  <Field label="Contact Phone" name="contact_phone" value={formData.contact_phone} onChange={handleChange} placeholder="+1 (555) 123-4567" type="tel" />
-                  <Field label="Proposed Meeting Date" name="proposal_date" value={formData.proposal_date} onChange={handleChange} placeholder="July 21, 2026" type="date" />
-                </div>
+                  <div className="grid grid-cols-2 gap-x-5">
+                    <Field label="Your Organization" name="org_name" value={formData.org_name} onChange={handleChange} placeholder="BidForge" />
+                    <Field label="Deal Size" name="deal_size" value={formData.deal_size} onChange={handleChange} placeholder="$1,500,000" isAiFilling={autofilling} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-5">
+                    <Field label="Contact Person" name="contact_name" value={formData.contact_name} onChange={handleChange} placeholder="John Smith" />
+                    <Field label="Contact Email" name="contact_email" value={formData.contact_email} onChange={handleChange} placeholder="john@bidforge.com" type="email" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-5">
+                    <Field label="Contact Phone" name="contact_phone" value={formData.contact_phone} onChange={handleChange} placeholder="+1 (555) 123-4567" type="tel" />
+                    <Field label="Proposed Meeting Date" name="proposal_date" value={formData.proposal_date} onChange={handleChange} placeholder="July 21, 2026" type="date" />
+                  </div>
 
-                <div className="my-5" style={{ borderTop: '1px solid var(--color-hairline)' }}></div>
+                  <div className="my-1" style={{ borderTop: '1px solid var(--color-hairline)' }}></div>
 
-                <Field label="Key Differentiators" name="differentiators" value={formData.differentiators} onChange={handleChange} placeholder="Proprietary engine, 24/7 support..." multi isAiFilling={autofilling} />
-                <Field label="Pain Points" name="pain_points" value={formData.pain_points} onChange={handleChange} placeholder="High latency, poor analytics..." multi isAiFilling={autofilling} />
-                <Field label="Compliance" name="compliance_reqs" value={formData.compliance_reqs} onChange={handleChange} placeholder="SOC 2, GDPR..." multi isAiFilling={autofilling} />
-                <Field label="Case Studies" name="case_studies" value={formData.case_studies} onChange={handleChange} placeholder="Migrated GlobalBank in 3 months..." multi isAiFilling={autofilling} />
+                  <Field label="Key Differentiators" name="differentiators" value={formData.differentiators} onChange={handleChange} placeholder="Proprietary engine, 24/7 support..." multi isAiFilling={autofilling} />
+                  <Field label="Pain Points" name="pain_points" value={formData.pain_points} onChange={handleChange} placeholder="High latency, poor analytics..." multi isAiFilling={autofilling} />
+                  <Field label="Compliance" name="compliance_reqs" value={formData.compliance_reqs} onChange={handleChange} placeholder="SOC 2, GDPR..." multi isAiFilling={autofilling} />
+                  <Field label="Case Studies" name="case_studies" value={formData.case_studies} onChange={handleChange} placeholder="Migrated GlobalBank in 3 months..." multi isAiFilling={autofilling} />
+                </div>
                 
                 <div className="mt-6 relative">
                   <motion.button
