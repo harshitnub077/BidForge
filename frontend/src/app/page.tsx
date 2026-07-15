@@ -551,7 +551,7 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
               ref={outputRef} 
-              className="lg:col-span-7 h-[calc(100vh-48px)] sticky top-6"
+              className="lg:col-span-7 h-[calc(100vh-104px)] sticky top-0"
             >
               <motion.div 
                 className="surface-card flex flex-col h-full overflow-hidden rounded-lg hover:border-[var(--color-hairline-strong)] transition-colors duration-200"
