@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import DashboardLayout from "@/components/DashboardLayout";
 
 const interSans = Inter({
   variable: "--font-inter-sans",
@@ -25,7 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${interSans.variable} ${jetbrainsMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-zinc-950 selection:bg-black/10">
-        {children}
+        <DashboardLayout>
+          {children}
+        </DashboardLayout>
       </body>
     </html>
   );

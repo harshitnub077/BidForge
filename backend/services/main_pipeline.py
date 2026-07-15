@@ -131,7 +131,8 @@ async def generate_complete_proposal_stream(
     contact_email: str,
     contact_phone: str,
     proposal_date: str,
-    supabase_client
+    supabase_client,
+    user_id: str = None
 ):
 
     # 1. Try to retrieve relevant context from vector DB (non-blocking)
@@ -272,8 +273,27 @@ CRITICAL RULES:
 - The document MUST be 100% ready to send without any manual edits"""
 
     try:
+        full_content = ""
         async for chunk in get_llm_response_stream(prompt, system_prompt):
+            full_content += chunk
             yield chunk
+            
+        # Save to Supabase History after streaming completes
+        if supabase_client and user_id:
+            try:
+                # Save the proposal
+                await asyncio.to_thread(
+                    lambda: supabase_client.table("proposals").insert({
+                        "org_id": org_id,
+                        "user_id": user_id,
+                        "rfp_source": rfp_title,
+                        "status": "draft",
+                        "content_json": {"markdown": full_content, "client_name": client_name}
+                    }).execute()
+                )
+            except Exception as e:
+                print(f"Failed to save proposal history: {e}")
+                
     except Exception as e:
         print(f"Error during streaming generation: {e}")
         yield f"\n\n**Error during generation**: {e}"

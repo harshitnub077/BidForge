@@ -99,7 +99,8 @@ async def generate_proposal(
             contact_email=req.contact_email,
             contact_phone=req.contact_phone,
             proposal_date=req.proposal_date,
-            supabase_client=db_client
+            supabase_client=db_client,
+            user_id=user_id
         ),
         media_type="text/plain"
     )

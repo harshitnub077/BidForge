@@ -9,11 +9,16 @@
 
 @layer base {
   body {
-    background-color: #ffffff; /* white */
-    color: #09090b; /* zinc-950 */
+    background-color: #000000; /* Pure black for modern dark mode */
+    color: #ededed; /* Soft white */
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+      radial-gradient(at 50% 0%, hsla(225,39%,30%,0.1) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, hsla(339,49%,30%,0.1) 0, transparent 50%);
+    background-attachment: fixed;
   }
 }
 
@@ -32,8 +37,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
+  0%, 100% { opacity: 0.6; transform: scale(1); filter: drop-shadow(0 0 8px rgba(255,255,255,0.2)); }
+  50% { opacity: 1; transform: scale(1.05); filter: drop-shadow(0 0 16px rgba(255,255,255,0.5)); }
 }
 .animate-pulse-glow {
   animation: pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -47,45 +52,59 @@
   animation: float 6s ease-in-out infinite;
 }
 
+/* ── Glassmorphism Utilities ── */
+.glass-panel {
+  @apply bg-zinc-900/50 backdrop-blur-xl border border-white/5 shadow-2xl;
+}
+.glass-panel-hover {
+  @apply hover:bg-zinc-900/80 hover:border-white/10 transition-all duration-300;
+}
+
 /* ── Custom Inputs ── */
 .premium-input {
-  @apply w-full bg-white border border-zinc-200 rounded-md px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors duration-200;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  @apply w-full bg-black/40 border border-white/10 rounded-md px-3 py-2 text-sm text-white placeholder:text-zinc-500 transition-all duration-300;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
 }
 .premium-input:focus {
-  @apply outline-none border-black bg-white;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(0, 0, 0, 1);
+  @apply outline-none border-indigo-500/50 bg-black/60;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5), 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 /* ── Custom Buttons ── */
 .premium-btn {
-  @apply relative overflow-hidden flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200;
+  @apply relative overflow-hidden flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-all duration-300;
 }
 .premium-btn::before {
   content: '';
   position: absolute;
   top: 0; left: -100%; width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
   transition: left 0.5s ease-in-out;
 }
 .premium-btn:hover::before {
   left: 100%;
 }
+.btn-primary {
+  @apply bg-white text-black hover:bg-zinc-200 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)];
+}
+.btn-secondary {
+  @apply bg-zinc-900 text-white border border-white/10 hover:bg-zinc-800;
+}
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
-/* ── Markdown Document Formatting ── */
+/* ── Markdown Document Formatting (Dark Mode) ── */
 .doc-prose {
   font-family: var(--font-sans);
-  color: #3f3f46; /* zinc-700 */
+  color: #a1a1aa; /* zinc-400 */
   line-height: 1.7;
 }
 .doc-prose h1, .doc-prose h2, .doc-prose h3 {
-  color: #09090b; /* zinc-950 */
+  color: #f4f4f5; /* zinc-50 */
   font-weight: 600;
   letter-spacing: -0.02em;
 }
@@ -94,35 +113,40 @@
   font-size: 1.15rem; 
   margin-top: 1.5em; margin-bottom: 0.75em; 
   padding-bottom: 0.25em; 
-  border-bottom: 1px solid rgba(0,0,0,0.1); 
+  border-bottom: 1px solid rgba(255,255,255,0.1); 
 }
-.doc-prose h3 { font-size: 1rem; margin-top: 1.25em; margin-bottom: 0.5em; color: #18181b; }
+.doc-prose h3 { font-size: 1rem; margin-top: 1.25em; margin-bottom: 0.5em; color: #e4e4e7; }
 .doc-prose p { margin-bottom: 1em; }
 .doc-prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
 .doc-prose li { margin-bottom: 0.5em; }
-.doc-prose strong { font-weight: 600; color: #09090b; }
-.doc-prose hr { border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 2em 0; }
+.doc-prose strong { font-weight: 600; color: #f4f4f5; }
+.doc-prose hr { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 2em 0; }
 
 .doc-prose table {
   width: 100%; border-collapse: separate; border-spacing: 0;
   margin: 1.5em 0; font-size: 0.875rem;
-  border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
   overflow: hidden;
+  background-color: rgba(255,255,255,0.02);
 }
 .doc-prose th {
-  background-color: rgba(0,0,0,0.03);
+  background-color: rgba(255,255,255,0.05);
   font-weight: 500; text-align: left; padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  color: #09090b;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: #f4f4f5;
 }
 .doc-prose td {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 .doc-prose tr:last-child td { border-bottom: none; }
 
 /* ── Print Styles (for Native PDF Export) ── */
 @media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
   body * {
     visibility: hidden;
   }
@@ -138,12 +162,16 @@
     padding: 0;
     color: #000;
   }
-  .doc-prose table {
-    border: 1px solid #ccc;
-  }
-  .doc-prose th, .doc-prose td {
-    border-bottom: 1px solid #eee;
-  }
+  
+  /* Reset doc-prose for print */
+  .doc-prose { color: #000; }
+  .doc-prose h1, .doc-prose h2, .doc-prose h3 { color: #000; }
+  .doc-prose strong { color: #000; }
+  .doc-prose h2, .doc-prose hr { border-bottom: 1px solid #ccc; }
+  .doc-prose table { border: 1px solid #ccc; background-color: transparent; }
+  .doc-prose th { background-color: #f0f0f0; color: #000; border-bottom: 1px solid #ccc; }
+  .doc-prose td { border-bottom: 1px solid #eee; }
+  
   @page {
     margin: 0.75in;
   }

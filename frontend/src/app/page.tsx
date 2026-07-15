@@ -283,91 +283,8 @@ export default function Home() {
     }
   };
 
-  if (!mounted) return null;
-  if (!session) return <Auth />;
-
-  if (!orgId) {
-    return (
-      <div className="min-h-screen flex items-center justify-center flex-col gap-4 bg-zinc-950 p-4">
-        {authError ? (
-          <div className="max-w-md p-6 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
-            <h3 className="text-red-400 font-semibold mb-2">Database Error</h3>
-            <p className="text-sm text-red-300/80 mb-6">{authError}</p>
-            <button className="premium-btn bg-white/10 hover:bg-white/20 text-white" onClick={() => supabase.auth.signOut()}>Sign Out</button>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center">
-            <Logo className="w-12 h-12 mb-6 animate-pulse-glow" />
-            <div className="text-sm text-zinc-500 tracking-wide uppercase">Initializing Workspace...</div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-zinc-50 flex text-zinc-900">
-      {/* ── Sidebar Nav ── */}
-      <aside className="w-64 bg-zinc-50 border-r border-zinc-200 flex flex-col z-20">
-        <div className="h-14 flex items-center px-6 border-b border-zinc-200">
-          <div className="flex items-center gap-3">
-            <Logo className="w-6 h-6" />
-            <span className="font-semibold text-zinc-900 tracking-tight text-base">BidForge</span>
-          </div>
-        </div>
-        <div className="flex-1 overflow-y-auto py-6 px-3 flex flex-col gap-1">
-          <NavItem icon={LayoutDashboard} label="Dashboard" active />
-          <NavItem icon={FolderKanban} label="Projects" />
-          <NavItem icon={Users} label="Clients" />
-          <NavItem icon={BarChart3} label="Analytics" />
-        </div>
-        <div className="p-3 border-t border-zinc-200">
-          <NavItem icon={Settings} label="Settings" />
-          
-          <button 
-            onClick={async () => {
-              try {
-                const res = await fetch("http://localhost:8000/billing/checkout", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
-                  body: JSON.stringify({ org_id: orgId || "pending", plan: "pro" })
-                });
-                const data = await res.json();
-                if (data.url) window.location.href = data.url;
-              } catch (e) {
-                alert("Failed to create checkout session");
-              }
-            }}
-            className="w-full mt-4 py-2 px-3 bg-gradient-to-r from-amber-200 to-yellow-400 hover:from-amber-300 hover:to-yellow-500 text-yellow-900 text-xs font-bold rounded-lg transition-all shadow-sm flex items-center justify-center gap-2"
-          >
-            <Sparkles size={14} /> Upgrade to Pro
-          </button>
-
-          <button 
-            onClick={() => supabase.auth.signOut()}
-            className="w-full mt-2 py-2 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors"
-          >
-            Sign out
-          </button>
-        </div>
-      </aside>
-
-      {/* ── Main Content Area ── */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
-        
-        {/* Topbar */}
-        <header className="h-14 bg-white border-b border-zinc-200 flex items-center justify-between px-6 relative z-20">
-          <h1 className="text-sm font-medium text-zinc-900">Create New Proposal</h1>
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-full bg-black/5 border border-zinc-200 flex items-center justify-center text-zinc-700 font-bold text-xs">
-              {session.user.email?.charAt(0).toUpperCase()}
-            </div>
-            <span className="text-sm font-medium text-zinc-400">{session.user.email}</span>
-          </div>
-        </header>
-
-        {/* Dashboard Grid */}
-        <div className="flex-1 overflow-y-auto p-6 relative">
+    <div className="flex-1 overflow-y-auto p-6 relative">
           
           <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
@@ -375,22 +292,22 @@ export default function Home() {
             <div className="lg:col-span-5 flex flex-col gap-6 animate-fade-in" style={{ animationDuration: '0.5s' }}>
 
               {/* Upload Card */}
-              <div className="bg-white border border-zinc-200 rounded-xl p-6 shadow-sm">
+              <div className="glass-panel rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="w-6 h-6 rounded-md bg-zinc-100 border border-zinc-200 text-zinc-900 flex items-center justify-center text-xs font-medium">1</div>
-                  <h2 className="text-sm font-semibold text-zinc-900">Source Document</h2>
+                  <div className="w-6 h-6 rounded-md bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 flex items-center justify-center text-xs font-medium shadow-[0_0_10px_rgba(99,102,241,0.2)]">1</div>
+                  <h2 className="text-sm font-semibold text-white">Source Document</h2>
                 </div>
                 
-                <div className={`relative border border-dashed rounded-lg p-6 text-center mb-5 transition-colors group cursor-pointer ${uploadDone ? 'border-zinc-300 bg-zinc-50' : 'border-zinc-200 bg-zinc-50/50 hover:border-zinc-300 hover:bg-zinc-100'}`}>
+                <div className={`relative border border-dashed rounded-lg p-6 text-center mb-5 transition-all group cursor-pointer ${uploadDone ? 'border-indigo-500/50 bg-indigo-500/10' : 'border-white/20 bg-black/20 hover:border-white/40 hover:bg-black/40'}`}>
                   {uploadDone ? (
-                    <CheckCircle2 className="w-8 h-8 mx-auto mb-3 text-emerald-600" />
+                    <CheckCircle2 className="w-8 h-8 mx-auto mb-3 text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
                   ) : (
-                    <UploadCloud className="w-8 h-8 mx-auto mb-3 text-zinc-400 group-hover:text-zinc-600 transition-colors" />
+                    <UploadCloud className="w-8 h-8 mx-auto mb-3 text-zinc-500 group-hover:text-white transition-colors" />
                   )}
-                  <div className="text-sm text-zinc-900 font-medium mb-1">
+                  <div className="text-sm text-white font-medium mb-1">
                     {uploadDone ? 'Processed & Vectorized' : 'Upload RFP (PDF, DOCX)'}
                   </div>
-                  <label className="cursor-pointer text-xs font-medium text-black hover:text-zinc-600 underline underline-offset-2">
+                  <label className="cursor-pointer text-xs font-medium text-indigo-300 hover:text-indigo-200 underline underline-offset-2">
                     <input type="file" accept=".pdf,.docx,.txt" onChange={(e) => { setFile(e.target.files?.[0] || null); setUploadDone(false); }} className="hidden" />
                     {file ? file.name : 'Browse files'}
                   </label>
@@ -398,33 +315,33 @@ export default function Home() {
                 <button 
                   onClick={handleUpload} 
                   disabled={uploading || !file} 
-                  className="premium-btn w-full bg-white hover:bg-zinc-50 text-zinc-900 border border-zinc-200 disabled:opacity-50 shadow-sm"
+                  className="btn-primary w-full disabled:opacity-50"
                 >
                   {uploading ? 'Processing...' : 'Upload File'}
                 </button>
               </div>
 
               {/* Context Card */}
-              <div className="bg-white border border-zinc-200 rounded-xl p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
+              <div className="glass-panel rounded-xl p-6 animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-md bg-zinc-100 border border-zinc-200 text-zinc-900 flex items-center justify-center text-xs font-medium">2</div>
-                    <h2 className="text-sm font-semibold text-zinc-900">Strategic Context</h2>
+                    <div className="w-6 h-6 rounded-md bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 flex items-center justify-center text-xs font-medium shadow-[0_0_10px_rgba(99,102,241,0.2)]">2</div>
+                    <h2 className="text-sm font-semibold text-white">Strategic Context</h2>
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={applyAutofill} 
                       disabled={!extractedMeta || autofilling}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 ${
                         extractedMeta 
-                          ? 'bg-black text-white hover:bg-zinc-800 shadow-sm' 
-                          : 'bg-zinc-100 text-zinc-400 cursor-not-allowed border border-zinc-200'
+                          ? 'bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 hover:bg-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]' 
+                          : 'bg-white/5 text-zinc-500 cursor-not-allowed border border-white/5'
                       } ${autofilling ? 'animate-pulse' : ''}`}
                     >
                       <Wand2 size={13} className={autofilling ? 'animate-spin' : ''} />
                       {autofilling ? 'Filling...' : 'AI Autofill'}
                     </button>
-                    <button onClick={clearForm} className="text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
+                    <button onClick={clearForm} className="text-xs font-medium text-zinc-400 hover:text-white transition-colors">
                       Reset
                     </button>
                   </div>
@@ -436,7 +353,7 @@ export default function Home() {
                 </div>
                 <Field label="RFP Title" name="rfp_title" value={formData.rfp_title} onChange={handleChange} placeholder="Q3 Platform Migration" />
                 
-                <div className="my-5 border-t border-zinc-200"></div>
+                <div className="my-5 border-t border-white/10"></div>
 
                 <div className="grid grid-cols-2 gap-x-4">
                   <Field label="Your Organization" name="org_name" value={formData.org_name} onChange={handleChange} placeholder="BidForge" />
@@ -451,7 +368,7 @@ export default function Home() {
                   <Field label="Proposed Meeting Date" name="proposal_date" value={formData.proposal_date} onChange={handleChange} placeholder="July 21, 2026" type="date" />
                 </div>
 
-                <div className="my-5 border-t border-zinc-200"></div>
+                <div className="my-5 border-t border-white/10"></div>
 
                 <Field label="Key Differentiators" name="differentiators" value={formData.differentiators} onChange={handleChange} placeholder="Proprietary engine, 24/7 support..." multi />
                 <Field label="Pain Points" name="pain_points" value={formData.pain_points} onChange={handleChange} placeholder="High latency, poor analytics..." multi />
@@ -462,7 +379,7 @@ export default function Home() {
                   <button
                     onClick={handleGenerate}
                     disabled={generating}
-                    className="premium-btn w-full bg-black hover:bg-zinc-800 text-white relative z-10"
+                    className="premium-btn w-full btn-primary relative z-10 font-bold"
                   >
                     {generating ? (
                       <>
@@ -482,14 +399,14 @@ export default function Home() {
 
             {/* ── RIGHT PANEL (Preview) ── */}
             <div ref={outputRef} className="lg:col-span-7 h-full sticky top-0 pb-6 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
-              <div className="bg-white border border-zinc-200 rounded-xl shadow-sm flex flex-col h-[calc(100vh-104px)] overflow-hidden">
+              <div className="glass-panel rounded-xl flex flex-col h-[calc(100vh-104px)] overflow-hidden">
                 
                 {/* Toolbar */}
-                <div className="px-6 py-4 border-b border-zinc-200 flex items-center justify-between bg-zinc-50/50">
+                <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-black/40">
                   <div className="flex items-center gap-3">
-                    <h2 className="text-sm font-semibold text-zinc-900">Document Output</h2>
+                    <h2 className="text-sm font-semibold text-white">Document Output</h2>
                     {proposalData && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-black/5 text-zinc-700 border border-zinc-200">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 shadow-[0_0_8px_rgba(99,102,241,0.2)]">
                         {Math.round(proposalData.confidence_score * 100)}% Match
                       </span>
                     )}
@@ -499,7 +416,7 @@ export default function Home() {
                     <button 
                       disabled={!proposalData}
                       onClick={() => navigator.clipboard.writeText(proposalData?.content || "")}
-                      className="p-2 border border-zinc-200 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-black/5 disabled:opacity-30 transition-colors bg-white shadow-sm"
+                      className="p-2 border border-white/10 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors bg-white/5"
                       title="Copy Markdown"
                     >
                       <Copy size={16} />
@@ -510,7 +427,7 @@ export default function Home() {
                         const { generateDocx } = await import("@/lib/doc_generation");
                         generateDocx(renderMarkdown(proposalData!.content), `${formData.client_name}_Proposal.docx`, orgId || "");
                       }}
-                      className="flex items-center gap-2 px-3 py-1.5 border border-zinc-200 rounded-lg text-xs font-medium text-zinc-700 hover:text-zinc-900 hover:bg-black/5 disabled:opacity-30 transition-colors bg-white shadow-sm"
+                      className="flex items-center gap-2 px-3 py-1.5 border border-white/10 rounded-lg text-xs font-medium text-white hover:bg-white/5 disabled:opacity-30 transition-colors bg-white/5"
                     >
                       <Download size={14} /> DOCX
                     </button>
@@ -520,7 +437,7 @@ export default function Home() {
                         const { generatePdf } = await import("@/lib/doc_generation");
                         generatePdf("proposal-output", `${formData.client_name}_Proposal.pdf`, orgId || "");
                       }}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-black hover:bg-zinc-800 rounded-lg text-xs font-medium text-white disabled:opacity-50 transition-colors shadow-sm"
+                      className="flex items-center gap-2 px-3 py-1.5 btn-primary rounded-lg text-xs font-medium disabled:opacity-50 transition-all"
                     >
                       <Share2 size={14} /> PDF
                     </button>
@@ -540,23 +457,23 @@ export default function Home() {
                         {generating ? (
                           <>
                             <Logo className="w-12 h-12 mb-6 animate-pulse-glow" />
-                            <p className="text-sm font-medium text-zinc-900 mb-2">Forging your proposal...</p>
-                            <p className="text-xs text-zinc-400 mb-4">{genElapsed}s elapsed</p>
+                            <p className="text-sm font-medium text-white mb-2 text-shadow-glow">Forging your proposal...</p>
+                            <p className="text-xs text-indigo-400 mb-4">{genElapsed}s elapsed</p>
                             <div className="flex flex-col gap-2 text-xs text-zinc-500">
-                              <span className={genElapsed >= 0 ? 'text-zinc-900 font-medium' : ''}>✦ Analyzing strategic context</span>
-                              <span className={genElapsed >= 3 ? 'text-zinc-900 font-medium' : ''}>✦ Drafting executive summary</span>
-                              <span className={genElapsed >= 6 ? 'text-zinc-900 font-medium' : ''}>✦ Building solution architecture</span>
-                              <span className={genElapsed >= 9 ? 'text-zinc-900 font-medium' : ''}>✦ Generating pricing & timeline</span>
-                              <span className={genElapsed >= 12 ? 'text-zinc-900 font-medium' : ''}>✦ Final quality review</span>
+                              <span className={genElapsed >= 0 ? 'text-indigo-300 font-medium drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]' : ''}>✦ Analyzing strategic context</span>
+                              <span className={genElapsed >= 3 ? 'text-indigo-300 font-medium drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]' : ''}>✦ Drafting executive summary</span>
+                              <span className={genElapsed >= 6 ? 'text-indigo-300 font-medium drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]' : ''}>✦ Building solution architecture</span>
+                              <span className={genElapsed >= 9 ? 'text-indigo-300 font-medium drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]' : ''}>✦ Generating pricing & timeline</span>
+                              <span className={genElapsed >= 12 ? 'text-indigo-300 font-medium drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]' : ''}>✦ Final quality review</span>
                             </div>
                           </>
                         ) : (
                           <>
-                            <div className="w-12 h-12 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center mb-4">
-                              <Sparkles size={20} className="text-zinc-400" />
+                            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+                              <Sparkles size={20} className="text-zinc-500" />
                             </div>
-                            <p className="text-sm text-zinc-900 font-medium mb-1">No proposal generated</p>
-                            <p className="text-sm text-zinc-500 text-center max-w-[250px]">Upload an RFP and provide strategic context to generate a highly tailored proposal.</p>
+                            <p className="text-sm text-white font-medium mb-1">No proposal generated</p>
+                            <p className="text-sm text-zinc-400 text-center max-w-[250px]">Upload an RFP and provide strategic context to generate a highly tailored proposal.</p>
                           </>
                         )}
                       </div>
@@ -569,8 +486,5 @@ export default function Home() {
 
           </div>
         </div>
-      </main>
-
-    </div>
   );
 }

@@ -13,12 +13,12 @@ export function Logo({ className = "w-8 h-8" }: { className?: string }) {
           <feComposite in="SourceGraphic" in2="blur" operator="over" />
         </filter>
         <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#000000" />
-          <stop offset="100%" stopColor="#3f3f46" />
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#a1a1aa" />
         </linearGradient>
         <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#000000" />
-          <stop offset="100%" stopColor="#71717a" />
+          <stop offset="0%" stopColor="#8b5cf6" />
+          <stop offset="100%" stopColor="#c4b5fd" />
         </linearGradient>
       </defs>
 
