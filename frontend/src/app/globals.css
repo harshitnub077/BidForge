@@ -26,7 +26,7 @@
     --mesh-bg: none;
   }
 
-  .dark {
+  :root[data-theme="dark"] {
     --color-canvas: #050505;
     --color-surface-1: rgba(255, 255, 255, 0.03);
     --color-surface-2: rgba(255, 255, 255, 0.08);

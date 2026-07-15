@@ -240,7 +240,7 @@ function NavItem({ icon: Icon, label, active = false }: NavItemProps) {
         'w-full flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 transition-colors group cursor-pointer',
         active ? 'bg-[var(--color-surface-2)] font-medium' : 'hover:bg-[var(--color-surface-1)]'
       )}
-      style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-muted)' }}`}>
+      style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-muted)' }}>
       <Icon size={18} style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-faint)' }} />
       {label}
     </button>
