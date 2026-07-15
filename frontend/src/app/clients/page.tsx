@@ -85,7 +85,7 @@ export default function ClientsPage() {
       ) : clients.length === 0 ? (
         <div className="text-center py-20 surface-card" style={{ borderStyle: 'dashed' }}>
           <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
-            style={{ backgroundColor: 'var(--color-accent-muted)', border: '1px solid rgba(94,106,210,0.15)' }}>
+            style={{ backgroundColor: 'var(--color-accent-muted)', border: '1px solid rgba(255,255,255,0.15)' }}>
             <Building2 className="w-7 h-7" style={{ color: 'var(--color-accent)' }} />
           </div>
           <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink)' }}>No Clients Found</p>
@@ -106,7 +106,7 @@ export default function ClientsPage() {
                   {c.name.charAt(0).toUpperCase()}
                 </div>
                 <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider"
-                  style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(94,106,210,0.15)' }}>
+                  style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(255,255,255,0.15)' }}>
                   Active
                 </span>
               </div>

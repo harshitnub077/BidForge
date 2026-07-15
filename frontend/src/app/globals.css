@@ -5,17 +5,17 @@
 @theme inline {
   --font-sans: var(--font-inter-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
-  --color-canvas: #09090b;
-  --color-surface-1: #111113;
-  --color-surface-2: #18181b;
-  --color-surface-3: #1f1f23;
+  --color-canvas: #000000;
+  --color-surface-1: #0a0a0a;
+  --color-surface-2: #141414;
+  --color-surface-3: #1f1f1f;
   --color-ink: #f7f8f8;
   --color-ink-muted: #8a8f98;
   --color-ink-faint: #4b5058;
-  --color-hairline: rgba(255, 255, 255, 0.06);
-  --color-hairline-strong: rgba(255, 255, 255, 0.1);
-  --color-accent: #5e6ad2;
-  --color-accent-muted: rgba(94, 106, 210, 0.15);
+  --color-hairline: rgba(255, 255, 255, 0.08);
+  --color-hairline-strong: rgba(255, 255, 255, 0.15);
+  --color-accent: #e5e5e5;
+  --color-accent-muted: rgba(255, 255, 255, 0.08);
 }
 
 @layer base {
@@ -26,9 +26,6 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-image:
-      radial-gradient(ellipse 80% 50% at 10% 0%, rgba(94,106,210,0.06) 0%, transparent 60%);
-    background-attachment: fixed;
   }
 
   body::before {
@@ -148,7 +145,8 @@
   border: 1px solid transparent;
 }
 .btn-primary:hover {
-  background-color: #6b75d8;
+  background-color: #ffffff;
+  color: #000000;
 }
 .btn-secondary {
   background-color: var(--color-surface-2);

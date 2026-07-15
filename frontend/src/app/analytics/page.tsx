@@ -105,7 +105,7 @@ export default function AnalyticsPage() {
             </p>
           </div>
 
-          <div className="surface-card surface-card-hover p-6" style={{ borderColor: 'rgba(94,106,210,0.15)' }}>
+          <div className="surface-card surface-card-hover p-6" style={{ borderColor: 'rgba(255,255,255,0.15)' }}>
             <div className="flex items-center gap-2 mb-4" style={{ color: 'var(--color-accent)' }}>
               <BarChart3 size={15} />
               <h3 className="text-[11px] font-medium uppercase tracking-wider">Proposals Won</h3>
@@ -133,18 +133,18 @@ export default function AnalyticsPage() {
                 <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorProposals" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#5e6ad2" stopOpacity={0.25}/>
-                      <stop offset="95%" stopColor="#5e6ad2" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#e5e5e5" stopOpacity={0.25}/>
+                      <stop offset="95%" stopColor="#e5e5e5" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
                   <XAxis dataKey="name" stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
                   <YAxis stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
                   <RechartsTooltip 
-                    contentStyle={{ backgroundColor: '#111113', borderColor: 'rgba(255,255,255,0.06)', borderRadius: '8px', fontSize: '12px' }}
+                    contentStyle={{ backgroundColor: '#141414', borderColor: 'rgba(255,255,255,0.06)', borderRadius: '8px', fontSize: '12px' }}
                     itemStyle={{ color: '#f7f8f8' }}
                   />
-                  <Area type="monotone" dataKey="proposals" stroke="#5e6ad2" strokeWidth={2} fillOpacity={1} fill="url(#colorProposals)" />
+                  <Area type="monotone" dataKey="proposals" stroke="#e5e5e5" strokeWidth={2} fillOpacity={1} fill="url(#colorProposals)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -159,10 +159,10 @@ export default function AnalyticsPage() {
                   <XAxis dataKey="name" stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
                   <YAxis stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
                   <RechartsTooltip 
-                    contentStyle={{ backgroundColor: '#111113', borderColor: 'rgba(255,255,255,0.06)', borderRadius: '8px', fontSize: '12px' }}
+                    contentStyle={{ backgroundColor: '#141414', borderColor: 'rgba(255,255,255,0.06)', borderRadius: '8px', fontSize: '12px' }}
                     itemStyle={{ color: '#f7f8f8' }}
                   />
-                  <Bar dataKey="wins" fill="#5e6ad2" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="wins" fill="#e5e5e5" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

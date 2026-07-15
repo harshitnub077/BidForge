@@ -303,7 +303,7 @@ export default function Home() {
               {/* Upload Card */}
               <div className="surface-card p-6">
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(94,106,210,0.2)' }}>1</div>
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(255,255,255,0.15)' }}>1</div>
                   <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Source Document</h2>
                 </div>
                 
@@ -340,7 +340,7 @@ export default function Home() {
               >
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(94,106,210,0.2)' }}>2</div>
+                    <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(255,255,255,0.15)' }}>2</div>
                     <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Strategic Context</h2>
                   </div>
                   <div className="flex items-center gap-2">
@@ -351,7 +351,7 @@ export default function Home() {
                       style={{
                         backgroundColor: extractedMeta ? 'var(--color-accent-muted)' : 'var(--color-surface-2)',
                         color: extractedMeta ? 'var(--color-accent)' : 'var(--color-ink-faint)',
-                        border: extractedMeta ? '1px solid rgba(94,106,210,0.2)' : '1px solid var(--color-hairline)',
+                        border: extractedMeta ? '1px solid rgba(255,255,255,0.15)' : '1px solid var(--color-hairline)',
                         cursor: extractedMeta ? 'pointer' : 'not-allowed',
                       }}
                     >
@@ -429,7 +429,7 @@ export default function Home() {
                   <div className="flex items-center gap-3">
                     <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Document Output</h2>
                     {proposalData && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(94,106,210,0.2)' }}>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(255,255,255,0.15)' }}>
                         {Math.round(proposalData.confidence_score * 100)}% Match
                       </span>
                     )}

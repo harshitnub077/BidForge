@@ -82,7 +82,7 @@ export default function ProjectsPage() {
       ) : proposals.length === 0 ? (
         <div className="text-center py-20 surface-card" style={{ borderStyle: 'dashed' }}>
           <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
-            style={{ backgroundColor: 'var(--color-accent-muted)', border: '1px solid rgba(94,106,210,0.15)' }}>
+            style={{ backgroundColor: 'var(--color-accent-muted)', border: '1px solid rgba(255,255,255,0.15)' }}>
             <Sparkles className="w-7 h-7" style={{ color: 'var(--color-accent)' }} />
           </div>
           <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink)' }}>No Projects Found</p>
@@ -119,7 +119,7 @@ export default function ProjectsPage() {
                   <td className="px-6 py-3.5">{p.content_json?.client_name || "Unknown"}</td>
                   <td className="px-6 py-3.5">
                     <span className="px-2 py-1 rounded-md text-[11px] font-medium capitalize"
-                      style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(94,106,210,0.15)' }}>
+                      style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(255,255,255,0.15)' }}>
                       {p.status}
                     </span>
                   </td>

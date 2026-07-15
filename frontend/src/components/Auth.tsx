@@ -48,9 +48,6 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
       style={{ backgroundColor: 'var(--color-canvas)' }}>
 
-      {/* Ambient glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full opacity-[0.07]"
-        style={{ background: 'radial-gradient(ellipse, var(--color-accent), transparent 70%)' }} />
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
