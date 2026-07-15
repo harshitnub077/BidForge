@@ -7,14 +7,7 @@ import { Session } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 
-const chartData = [
-  { name: 'Jan', proposals: 4, wins: 2 },
-  { name: 'Feb', proposals: 7, wins: 3 },
-  { name: 'Mar', proposals: 5, wins: 2 },
-  { name: 'Apr', proposals: 12, wins: 5 },
-  { name: 'May', proposals: 15, wins: 8 },
-  { name: 'Jun', proposals: 22, wins: 14 },
-];
+
 
 export default function AnalyticsPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -130,21 +123,21 @@ export default function AnalyticsPage() {
             <h3 className="text-[11px] font-medium uppercase tracking-wider mb-6" style={{ color: 'var(--color-ink-faint)' }}>Generation Trends</h3>
             <div className="h-[240px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                <AreaChart data={analytics.chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorProposals" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#e5e5e5" stopOpacity={0.25}/>
-                      <stop offset="95%" stopColor="#e5e5e5" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#0070f3" stopOpacity={0.25}/>
+                      <stop offset="95%" stopColor="#0070f3" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
                   <XAxis dataKey="name" stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
                   <YAxis stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
                   <RechartsTooltip 
-                    contentStyle={{ backgroundColor: '#141414', borderColor: 'rgba(255,255,255,0.06)', borderRadius: '8px', fontSize: '12px' }}
-                    itemStyle={{ color: '#f7f8f8' }}
+                    contentStyle={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)', borderRadius: '6px', fontSize: '12px' }}
+                    itemStyle={{ color: 'var(--color-ink)' }}
                   />
-                  <Area type="monotone" dataKey="proposals" stroke="#e5e5e5" strokeWidth={2} fillOpacity={1} fill="url(#colorProposals)" />
+                  <Area type="monotone" dataKey="proposals" stroke="#0070f3" strokeWidth={2} fillOpacity={1} fill="url(#colorProposals)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -154,15 +147,15 @@ export default function AnalyticsPage() {
             <h3 className="text-[11px] font-medium uppercase tracking-wider mb-6" style={{ color: 'var(--color-ink-faint)' }}>Win Rate by Month</h3>
             <div className="h-[240px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                <BarChart data={analytics.chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
                   <XAxis dataKey="name" stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
                   <YAxis stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
                   <RechartsTooltip 
-                    contentStyle={{ backgroundColor: '#141414', borderColor: 'rgba(255,255,255,0.06)', borderRadius: '8px', fontSize: '12px' }}
-                    itemStyle={{ color: '#f7f8f8' }}
+                    contentStyle={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)', borderRadius: '6px', fontSize: '12px' }}
+                    itemStyle={{ color: 'var(--color-ink)' }}
                   />
-                  <Bar dataKey="wins" fill="#e5e5e5" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="wins" fill="#0070f3" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

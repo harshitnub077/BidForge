@@ -55,6 +55,26 @@ export default function ProjectsPage() {
     }
   }, [session]);
 
+  const updateStatus = async (proposalId: string, newStatus: string) => {
+    if (!session) return;
+    
+    // Optimistic update
+    setProposals(prev => prev.map(p => p.id === proposalId ? { ...p, status: newStatus } : p));
+    
+    try {
+      await fetch(`http://localhost:8000/dashboard/projects/${proposalId}/status`, {
+        method: "PATCH",
+        headers: { 
+          "Authorization": `Bearer ${session.access_token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+    } catch (err) {
+      console.error("Failed to update status:", err);
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 8 }}
@@ -118,17 +138,30 @@ export default function ProjectsPage() {
                   </td>
                   <td className="px-6 py-3.5">{p.content_json?.client_name || "Unknown"}</td>
                   <td className="px-6 py-3.5">
-                    <span className="px-2 py-1 rounded-md text-[11px] font-medium capitalize"
-                      style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(255,255,255,0.15)' }}>
-                      {p.status}
-                    </span>
+                    <select
+                      value={p.status}
+                      onChange={(e) => updateStatus(p.id, e.target.value)}
+                      className="px-2 py-1 rounded-md text-[11px] font-medium capitalize outline-none cursor-pointer"
+                      style={{ 
+                        backgroundColor: p.status === 'won' ? 'rgba(0, 112, 243, 0.15)' : 'var(--color-surface-2)', 
+                        color: p.status === 'won' ? '#0070f3' : 'var(--color-ink)', 
+                        border: '1px solid var(--color-hairline)' 
+                      }}
+                    >
+                      <option value="draft">Draft</option>
+                      <option value="submitted">Submitted</option>
+                      <option value="won">Won</option>
+                      <option value="lost">Lost</option>
+                    </select>
                   </td>
                   <td className="px-6 py-3.5 flex items-center gap-2">
                     <Calendar size={13} style={{ color: 'var(--color-ink-faint)' }} />
                     {new Date(p.generated_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-3.5 text-right">
-                    <button className="p-1 transition-colors" style={{ color: 'var(--color-ink-faint)' }}
+                    <button 
+                      onClick={() => alert(`View Proposal ID: ${p.id} \n\nContent: ${p.content_json?.client_name}`)}
+                      className="p-1 transition-colors" style={{ color: 'var(--color-ink-faint)' }}
                       onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-ink)'}
                       onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-ink-faint)'}>
                       <ChevronRight size={16} />
