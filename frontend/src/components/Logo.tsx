@@ -8,12 +8,12 @@ export function Logo({ className = "w-8 h-8" }: { className?: string }) {
     >
       <defs>
         <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#f7f8f8" />
-          <stop offset="100%" stopColor="#8a8f98" />
+          <stop offset="0%" stopColor="var(--color-ink)" />
+          <stop offset="100%" stopColor="var(--color-ink-faint)" />
         </linearGradient>
         <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#f7f8f8" />
-          <stop offset="100%" stopColor="#8a8f98" />
+          <stop offset="0%" stopColor="var(--color-ink)" />
+          <stop offset="100%" stopColor="var(--color-accent)" />
         </linearGradient>
       </defs>
 
