@@ -431,7 +431,7 @@ export default function Home() {
             >
 
               {/* Upload Card */}
-              <div className="surface-card p-6 rounded-2xl shadow-xl">
+              <div className="surface-card p-6 rounded-2xl">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">1</div>
                   <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Source Document</h2>
@@ -448,7 +448,7 @@ export default function Home() {
                   hidden: { opacity: 0, y: 10 },
                   show: { opacity: 1, y: 0, transition: { duration: 0.4, delay: 0.1, staggerChildren: 0.05, delayChildren: 0.2 } }
                 }}
-                className="surface-card p-6 rounded-2xl shadow-xl"
+                className="surface-card p-6 rounded-2xl"
               >
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
@@ -549,7 +549,7 @@ export default function Home() {
               ref={outputRef} 
               className="lg:col-span-7 h-full sticky top-0 -mb-6"
             >
-              <div className="surface-card flex flex-col h-[calc(100vh-72px)] overflow-hidden rounded-b-none border-b-0">
+              <div className="surface-card flex flex-col h-[calc(100vh-72px)] overflow-hidden rounded-b-none">
                 
                 {/* Toolbar */}
                 <div className="px-6 py-3.5 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-hairline)' }}>

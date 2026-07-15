@@ -9,10 +9,10 @@
 
 @layer base {
   :root {
-    --color-canvas: #ffffff;
-    --color-surface-1: rgba(0, 0, 0, 0.03);
-    --color-surface-2: rgba(0, 0, 0, 0.06);
-    --color-surface-3: rgba(0, 0, 0, 0.1);
+    --color-canvas: #f2f2f7;
+    --color-surface-1: rgba(255, 255, 255, 0.6);
+    --color-surface-2: rgba(255, 255, 255, 0.8);
+    --color-surface-3: rgba(255, 255, 255, 1);
     --color-ink: #111827;
     --color-ink-muted: rgba(17, 24, 39, 0.65);
     --color-ink-faint: rgba(17, 24, 39, 0.4);
@@ -21,29 +21,33 @@
     --color-accent: #000000;
     --color-accent-muted: rgba(0, 0, 0, 0.05);
     
-    --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.05), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -1px 2px rgba(0, 0, 0, 0.04);
-    --glass-shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.08), inset 0 2px 6px rgba(255, 255, 255, 1), inset 0 -1px 2px rgba(0, 0, 0, 0.05);
-    --mesh-bg: none;
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -1px 2px rgba(255, 255, 255, 0.4);
+    --glass-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.06), inset 0 2px 6px rgba(255, 255, 255, 1), inset 0 -1px 2px rgba(255, 255, 255, 0.5);
+    --mesh-bg: radial-gradient(circle at 15% 50%, rgba(120, 119, 198, 0.05), transparent 40%),
+               radial-gradient(circle at 85% 20%, rgba(74, 222, 128, 0.05), transparent 50%),
+               radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.05), transparent 45%);
+    --glass-blur: blur(24px) saturate(180%);
   }
 
   :root[data-theme="dark"] {
     --color-canvas: #050505;
-    --color-surface-1: rgba(255, 255, 255, 0.03);
-    --color-surface-2: rgba(255, 255, 255, 0.08);
-    --color-surface-3: rgba(255, 255, 255, 0.12);
+    --color-surface-1: rgba(30, 30, 35, 0.5);
+    --color-surface-2: rgba(45, 45, 55, 0.6);
+    --color-surface-3: rgba(60, 60, 75, 0.7);
     --color-ink: #ffffff;
     --color-ink-muted: rgba(255, 255, 255, 0.65);
     --color-ink-faint: rgba(255, 255, 255, 0.4);
-    --color-hairline: rgba(255, 255, 255, 0.2);
-    --color-hairline-strong: rgba(255, 255, 255, 0.3);
+    --color-hairline: rgba(255, 255, 255, 0.1);
+    --color-hairline-strong: rgba(255, 255, 255, 0.2);
     --color-accent: #ffffff;
     --color-accent-muted: rgba(255, 255, 255, 0.1);
     
-    --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.4), inset 0 -1px 1px rgba(255, 255, 255, 0.05);
-    --glass-shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -1px 1px rgba(255, 255, 255, 0.1);
-    --mesh-bg: radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.05), transparent 40%),
-               radial-gradient(circle at 85% 20%, rgba(255, 255, 255, 0.03), transparent 50%),
-               radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.04), transparent 45%);
+    --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px rgba(255, 255, 255, 0.05);
+    --glass-shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3), inset 0 -1px 1px rgba(255, 255, 255, 0.1);
+    --mesh-bg: radial-gradient(circle at 15% 50%, rgba(120, 119, 198, 0.15), transparent 40%),
+               radial-gradient(circle at 85% 20%, rgba(74, 222, 128, 0.1), transparent 50%),
+               radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.1), transparent 45%);
+    --glass-blur: blur(24px) saturate(180%);
   }
   body {
     background-color: var(--color-canvas);
@@ -72,6 +76,16 @@
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .surface-card {
+    background: var(--color-surface-1);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--color-hairline);
+    box-shadow: var(--glass-shadow);
   }
 }
 
