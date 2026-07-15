@@ -5,7 +5,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from core.config import settings
 from core.telemetry import init_telemetry
-from routers import rfp, proposal
+from routers import rfp, proposal, billing
 
 # Initialize Telemetry
 init_telemetry()
@@ -45,3 +45,4 @@ def health_check():
 
 app.include_router(rfp.router)
 app.include_router(proposal.router)
+app.include_router(billing.router)

@@ -7,6 +7,7 @@ from services.vector_db import vector_db
 from services.main_pipeline import generate_complete_proposal_stream
 from supabase import create_client
 import uuid
+import posthog
 
 router = APIRouter(prefix="/proposal", tags=["Proposal"])
 
@@ -64,6 +65,22 @@ async def generate_proposal(
     except Exception as e:
         # Non-blocking — log but don't prevent generation for an authenticated user
         print(f"DB org check warning (non-fatal): {str(e)}")
+
+    # Telemetry: Track proposal generation event
+    try:
+        if settings.POSTHOG_API_KEY:
+            posthog.capture(
+                user_id,
+                "proposal_generated",
+                properties={
+                    "org_id": req.org_id,
+                    "industry": req.industry,
+                    "deal_size": req.deal_size,
+                    "has_case_studies": bool(req.case_studies)
+                }
+            )
+    except Exception as e:
+        print(f"Telemetry error (non-fatal): {str(e)}")
 
     # Generate proposal using the Anti-Gravity RAG pipeline and stream it directly
     return StreamingResponse(

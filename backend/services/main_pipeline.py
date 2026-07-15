@@ -87,6 +87,34 @@ async def get_llm_response_stream(prompt: str, system: str, max_retries: int = 3
             raise
 
 
+async def generate_strategy_profile(
+    client_name: str,
+    rfp_title: str,
+    pain_points: str,
+    context: str
+) -> str:
+    """Agentic Reflection: Analyze context and inputs to determine the best strategy."""
+    prompt = f"""Analyze the following RFP details and our past company context to create a highly targeted 3-point Strategy Profile for writing this proposal.
+    
+Client: {client_name}
+RFP Title: {rfp_title}
+Pain Points: {pain_points}
+
+OUR CONTEXT:
+{context}
+
+Output a short, sharp strategy profile focusing on:
+1. The hidden risk we must address.
+2. The single best case study to highlight from our context.
+3. The exact tone to use.
+"""
+    system = "You are a Master Proposal Strategist. Output only the brief 3-point strategy."
+    try:
+        return await get_llm_response(prompt, system)
+    except Exception as e:
+        print(f"Strategy generation failed: {e}")
+        return "Focus on security, speed, and our proven enterprise track record."
+
 # ── Core: Generate COMPLETE proposal with Advanced Anti-Gravity Rules ─────────
 async def generate_complete_proposal_stream(
     org_id: str,
@@ -181,6 +209,14 @@ ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
     if proposal_date:
         contact_details += f"- Proposed Meeting Date: {proposal_date}\n"
 
+    # 1.5 Agentic Reflection Pass
+    strategy_profile = await generate_strategy_profile(
+        client_name=client_name,
+        rfp_title=rfp_title,
+        pain_points=pain_points,
+        context=context
+    )
+
     prompt = f"""Generate a complete, winning proposal for:
 - Client: {client_name} in {industry}
 - RFP Title: {rfp_title}
@@ -192,6 +228,10 @@ ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
 - Security/compliance requirements: {compliance_reqs or 'Standard enterprise requirements'}
 {contact_details}
 {"ORGANIZATION KNOWLEDGE BASE CONTEXT (incorporate naturally):" + chr(10) + context if context else ""}
+
+YOUR STRATEGY PROFILE FOR THIS PROPOSAL (Execute on this):
+{strategy_profile}
+
 
 Return a complete, send-ready proposal with these sections:
 

@@ -323,6 +323,26 @@ export default function Home() {
         </div>
         <div className="p-3 border-t border-zinc-200">
           <NavItem icon={Settings} label="Settings" />
+          
+          <button 
+            onClick={async () => {
+              try {
+                const res = await fetch("http://localhost:8000/billing/checkout", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+                  body: JSON.stringify({ org_id: orgId || "pending", plan: "pro" })
+                });
+                const data = await res.json();
+                if (data.url) window.location.href = data.url;
+              } catch (e) {
+                alert("Failed to create checkout session");
+              }
+            }}
+            className="w-full mt-4 py-2 px-3 bg-gradient-to-r from-amber-200 to-yellow-400 hover:from-amber-300 hover:to-yellow-500 text-yellow-900 text-xs font-bold rounded-lg transition-all shadow-sm flex items-center justify-center gap-2"
+          >
+            <Sparkles size={14} /> Upgrade to Pro
+          </button>
+
           <button 
             onClick={() => supabase.auth.signOut()}
             className="w-full mt-2 py-2 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors"
