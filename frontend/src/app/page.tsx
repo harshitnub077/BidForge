@@ -233,7 +233,17 @@ export default function Home() {
     if (!formData.client_name || !formData.rfp_title) return alert("Client name and RFP title are required.");
     if (!session) return;
     setGenerating(true);
-    setProposalData({ content: "", confidence_score: 0.95, requires_human_review: false });
+    // Dynamic Confidence Score Calculation
+    let score = 0.65; // Base confidence
+    if (formData.pain_points && formData.pain_points.length > 10) score += 0.08;
+    if (formData.differentiators && formData.differentiators.length > 10) score += 0.08;
+    if (formData.case_studies && formData.case_studies.length > 10) score += 0.08;
+    if (formData.compliance_reqs && formData.compliance_reqs.length > 5) score += 0.04;
+    if (formData.deal_size) score += 0.02;
+    if (extractedMeta) score += 0.04;
+    const finalScore = Math.min(0.99, score);
+
+    setProposalData({ content: "", confidence_score: finalScore, requires_human_review: false });
     setGenElapsed(0);
     genTimerRef.current = setInterval(() => setGenElapsed(prev => prev + 1), 1000);
     try {
@@ -258,7 +268,7 @@ export default function Home() {
           const { done, value } = await reader.read();
           if (done) break;
           content += decoder.decode(value, { stream: true });
-          setProposalData({ content, confidence_score: 0.95, requires_human_review: false });
+          setProposalData({ content, confidence_score: finalScore, requires_human_review: false });
           
           if (!firstScroll && content.length > 100) {
             outputRef.current?.scrollIntoView({ behavior: 'smooth' });

@@ -148,18 +148,20 @@ ANTI-GRAVITY RULES (what makes proposals WIN):
 5. End every section with a transition that builds momentum toward signing
 6. Include a "What happens on Day 1" section — reduces decision anxiety
 7. Make the pricing section feel like an investment, not a cost
+8. ELIMINATE FLUFF: Ban words like "leverage", "utilize", "synergy", "seamless". Use strong, active verbs (e.g., "build", "accelerate", "eliminate").
+9. WRITE LIKE A HUMAN EXPERT: Avoid robotic transitions ("In conclusion", "Furthermore"). Write punchy, concise, and highly readable sentences.
 
 FORMATTING RULES (CRITICAL — follow precisely):
 - Use clean, professional Markdown
 - Use ## for main section headers (NOT #)
 - Use ### for sub-section headers
-- Use **bold** for emphasis on key terms
+- Use **bold** for emphasis on key terms and metrics
 - Use bullet points (- ) for lists
 - Use --- for section dividers
 - Use tables (|col|col|) for timelines and pricing
 - DO NOT use HTML tags
 - DO NOT use code blocks
-- Keep paragraphs concise (3-4 sentences max)
+- Keep paragraphs very concise (2-3 sentences max) to maximize readability
 - Use line breaks between sections for readability
 
 ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
