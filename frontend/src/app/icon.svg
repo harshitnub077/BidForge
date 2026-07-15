@@ -1,34 +1,17 @@
-<svg 
-  viewBox="0 0 200 200" 
-  fill="none" 
-  xmlns="http://www.w3.org/2000/svg"
->
+<svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Premium Dark Indigo Gradient Background -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGradient)"/>
+  
+  <!-- Bold AI Sparkle (High Contrast White) -->
+  <path 
+    d="M256 80 C 270 220, 292 242, 432 256 C 292 270, 270 292, 256 432 C 242 292, 220 270, 80 256 C 220 242, 242 220, 256 80 Z" 
+    fill="white" 
+  />
+  
   <defs>
-    <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stopColor="#f7f8f8" />
-      <stop offset="100%" stopColor="#8a8f98" />
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop stop-color="#6366f1"/> <!-- Indigo 500 -->
+      <stop offset="1" stop-color="#312e81"/> <!-- Indigo 900 -->
     </linearGradient>
   </defs>
-
-  <path 
-    d="M50 80 L30 80 Q20 80 25 95 L40 130 C45 145 60 150 80 150 L120 150 C140 150 155 145 160 130 L175 95 Q180 80 170 80 L150 80" 
-    stroke="url(#silverGrad)" 
-    strokeWidth="12" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    fill="transparent"
-  />
-  <path 
-    d="M20 70 L180 70" 
-    stroke="url(#silverGrad)" 
-    strokeWidth="16" 
-    strokeLinecap="round" 
-  />
-
-  <g transform="translate(100, 35) scale(0.55)">
-    <path 
-      d="M0 -40 L10 -10 L40 0 L10 10 L0 40 L-10 10 L-40 0 L-10 -10 Z" 
-      fill="url(#silverGrad)"
-    />
-  </g>
 </svg>

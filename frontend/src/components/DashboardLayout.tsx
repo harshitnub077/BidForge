@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import Auth from "@/components/Auth";
 import { Logo } from "@/components/Logo";
+import { GlassToggle } from "@/components/ui/GlassToggle";
 import { Session } from "@supabase/supabase-js";
 import { usePathname, useRouter } from "next/navigation";
 import { 
-  LayoutDashboard, FolderKanban, Users, BarChart3, Settings, Sparkles
+  LayoutDashboard, FolderKanban, Users, BarChart3, Settings, Sparkles, PanelLeftClose, PanelLeftOpen, Search
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Toaster, toast } from "sonner";
 
 interface NavItemProps {
@@ -18,21 +20,22 @@ interface NavItemProps {
   onClick?: () => void;
 }
 
-function NavItem({ icon: Icon, label, active = false, onClick }: NavItemProps) {
+function NavItem({ icon: Icon, label, active = false, onClick, isCollapsed = false }: NavItemProps & { isCollapsed?: boolean }) {
   return (
     <button 
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150"
+      className={`w-full flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2 rounded-lg text-[13px] font-medium transition-all duration-150`}
       style={{
         backgroundColor: active ? 'var(--color-surface-2)' : 'transparent',
         color: active ? 'var(--color-ink)' : 'var(--color-ink-muted)',
         border: active ? '1px solid var(--color-hairline)' : '1px solid transparent',
       }}
+      title={isCollapsed ? label : undefined}
       onMouseEnter={(e) => { if (!active) { e.currentTarget.style.backgroundColor = 'var(--color-surface-2)'; e.currentTarget.style.color = 'var(--color-ink)'; } }}
       onMouseLeave={(e) => { if (!active) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--color-ink-muted)'; } }}
     >
-      <Icon size={16} style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-faint)' }} />
-      {label}
+      <Icon size={16} style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-faint)' }} className="shrink-0" />
+      {!isCollapsed && <span className="truncate">{label}</span>}
     </button>
   );
 }
@@ -42,6 +45,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [orgId, setOrgId] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
   
   const pathname = usePathname();
   const router = useRouter();
@@ -53,6 +66,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -91,21 +105,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen flex" style={{ color: 'var(--color-ink)' }}>
       {/* ── Sidebar ── */}
-      <aside className="w-60 flex flex-col border-r" style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)' }}>
-        <div className="h-14 flex items-center px-5 border-b" style={{ borderColor: 'var(--color-hairline)' }}>
-          <div className="flex items-center gap-2.5">
-            <Logo className="w-5 h-5" />
-            <span className="font-semibold text-sm tracking-tight" style={{ color: 'var(--color-ink)', letterSpacing: '-0.02em' }}>BidForge</span>
+      <motion.aside 
+        id="sidebar-navigation"
+        aria-label="Sidebar"
+        initial={false}
+        animate={{ width: isCollapsed ? 68 : 240 }}
+        transition={{ type: "spring", damping: 20, stiffness: 100 }}
+        className="flex flex-col border-r shrink-0 overflow-hidden" 
+        style={{ 
+          backgroundColor: 'var(--color-surface-1)', 
+          borderColor: 'var(--color-hairline)',
+          backdropFilter: 'blur(24px) saturate(150%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(150%)'
+        }}
+      >
+        <div className={`h-14 flex items-center ${isCollapsed ? 'justify-center' : 'px-5'} border-b shrink-0`} style={{ borderColor: 'var(--color-hairline)' }}>
+          <div className="flex items-center gap-2.5 overflow-hidden">
+            <Logo className="w-5 h-5 shrink-0" />
+            {!isCollapsed && <span className="font-semibold text-sm tracking-tight" style={{ color: 'var(--color-ink)', letterSpacing: '-0.02em' }}>BidForge</span>}
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-0.5">
-          <NavItem icon={LayoutDashboard} label="Dashboard" active={pathname === "/"} onClick={() => router.push("/")} />
-          <NavItem icon={FolderKanban} label="Projects" active={pathname === "/projects"} onClick={() => router.push("/projects")} />
-          <NavItem icon={Users} label="Clients" active={pathname === "/clients"} onClick={() => router.push("/clients")} />
-          <NavItem icon={BarChart3} label="Analytics" active={pathname === "/analytics"} onClick={() => router.push("/analytics")} />
-        </div>
-        <div className="p-3 border-t" style={{ borderColor: 'var(--color-hairline)' }}>
-          <NavItem icon={Settings} label="Settings" />
+        <nav aria-label="Main Navigation" className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-0.5">
+          <NavItem icon={LayoutDashboard} label="Dashboard" active={pathname === "/"} onClick={() => router.push("/")} isCollapsed={isCollapsed} />
+          <NavItem icon={FolderKanban} label="Projects" active={pathname === "/projects"} onClick={() => router.push("/projects")} isCollapsed={isCollapsed} />
+          <NavItem icon={Users} label="Clients" active={pathname === "/clients"} onClick={() => router.push("/clients")} isCollapsed={isCollapsed} />
+          <NavItem icon={BarChart3} label="Analytics" active={pathname === "/analytics"} onClick={() => router.push("/analytics")} isCollapsed={isCollapsed} />
+        </nav>
+        <div className="p-3 border-t shrink-0 flex flex-col items-center" style={{ borderColor: 'var(--color-hairline)' }}>
+          <NavItem icon={Settings} label="Settings" isCollapsed={isCollapsed} />
           
           <button 
             onClick={async () => {
@@ -121,7 +148,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 toast.error("Failed to create checkout session");
               }
             }}
-            className="w-full mt-3 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2"
+            title={isCollapsed ? "Upgrade to Pro" : undefined}
+            className={`w-full mt-3 py-2 ${isCollapsed ? 'px-0 justify-center' : 'px-3 justify-center gap-2'} rounded-lg text-xs font-semibold transition-all flex items-center`}
             style={{
               backgroundColor: 'var(--color-accent-muted)',
               color: '#a5b4fc',
@@ -130,41 +158,71 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(94,106,210,0.25)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent-muted)'}
           >
-            <Sparkles size={13} /> Upgrade to Pro
+            <Sparkles size={13} className="shrink-0" /> {!isCollapsed && "Upgrade"}
           </button>
 
           <button 
             onClick={() => supabase.auth.signOut()}
-            className="w-full mt-2 py-2 text-xs font-medium transition-colors"
+            title={isCollapsed ? "Sign out" : undefined}
+            className={`w-full mt-2 py-2 text-xs font-medium transition-colors ${isCollapsed ? 'text-center' : ''}`}
             style={{ color: 'var(--color-ink-faint)' }}
             onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-ink)'}
             onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-ink-faint)'}
           >
-            Sign out
+            {isCollapsed ? "Out" : "Sign out"}
           </button>
         </div>
-      </aside>
+      </motion.aside>
 
       {/* ── Main Content Area ── */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
         
         {/* Topbar */}
-        <header className="h-14 flex items-center justify-between px-6 border-b shrink-0"
-          style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)' }}>
-          <h1 className="text-sm font-medium capitalize" style={{ color: 'var(--color-ink)', letterSpacing: '-0.01em' }}>
-            {pathname === "/" ? "Create New Proposal" : pathname.substring(1)}
-          </h1>
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold"
+        <div className="p-4 pb-0 shrink-0 z-10">
+          <header role="banner" className="h-14 flex items-center justify-between px-6 rounded-full surface-card">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsCollapsed(!isCollapsed)} 
+              className="text-zinc-500 hover:text-zinc-200 transition-colors"
+              aria-expanded={!isCollapsed}
+              aria-controls="sidebar-navigation"
+              aria-label="Toggle sidebar"
+            >
+              {isCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+            </button>
+            <div className="w-px h-4 bg-white/10" />
+            <div className="flex items-center gap-2 text-[13px]">
+              <span className="text-zinc-500 font-medium">BidForge Workspace</span>
+              <span className="text-zinc-700">/</span>
+              <span className="text-zinc-200 font-medium">{pathname === "/" ? "New Proposal" : pathname.substring(1)}</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 bg-black/5 border border-black/5 rounded-md px-2.5 py-1.5 text-xs text-zinc-500 w-48 shadow-inner hover:border-black/10 transition-colors cursor-text">
+              <Search size={14} className="text-zinc-500" />
+              <span>Search projects...</span>
+              <div className="ml-auto flex gap-1">
+                <kbd className="rounded px-1 py-0.5 text-[9px] font-sans border shadow-sm" style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)', color: 'var(--color-ink-faint)' }}>⌘</kbd>
+                <kbd className="rounded px-1 py-0.5 text-[9px] font-sans border shadow-sm" style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)', color: 'var(--color-ink-faint)' }}>K</kbd>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 mr-2">
+              <span className="text-[11px] font-medium tracking-wide uppercase" style={{ color: 'var(--color-ink-faint)' }}>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
+              <GlassToggle isOn={isDark} onToggle={() => setIsDark(!isDark)} isThemeToggle />
+            </div>
+
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shadow-sm cursor-pointer hover:ring-2 hover:ring-var(--color-ink-faint)/20 transition-all"
               style={{ backgroundColor: 'var(--color-surface-3)', color: 'var(--color-ink-muted)', border: '1px solid var(--color-hairline)' }}>
               {session.user.email?.charAt(0).toUpperCase()}
             </div>
-            <span className="text-[13px]" style={{ color: 'var(--color-ink-muted)' }}>{session.user.email}</span>
           </div>
-        </header>
+          </header>
+        </div>
 
         {/* Dynamic Content */}
-        <div className="flex-1 overflow-y-auto p-6 relative" style={{ backgroundColor: 'var(--color-canvas)' }}>
+        <div className="flex-1 overflow-y-auto p-6 relative bg-transparent">
           {children}
         </div>
       </main>

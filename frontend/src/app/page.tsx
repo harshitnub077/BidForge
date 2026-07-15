@@ -7,10 +7,12 @@ import { Logo } from "@/components/Logo";
 import { Session } from "@supabase/supabase-js";
 import { 
   LayoutDashboard, FolderKanban, Users, BarChart3, Settings, 
-  UploadCloud, Sparkles, CheckCircle2, Download, Copy, Share2, Wand2
+  UploadCloud, Sparkles, CheckCircle2, Download, Copy, Share2, Wand2, Loader2
 } from "lucide-react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import TiptapEditor from "@/components/TiptapEditor";
 
 // ── Markdown renderer ──────────────────────────────────────────────────────────
 function renderMarkdown(text: string): string {
@@ -21,7 +23,7 @@ function renderMarkdown(text: string): string {
   let isFirstTableRow = true;
 
   for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
+    const line = lines[i];
 
     // Skip separator rows in tables (|---|---|)
     if (/^\|[\s\-:|]+\|$/.test(line)) continue;
@@ -76,7 +78,7 @@ function applyInline(text: string): string {
     .replace(/\*(.+?)\*/g, '<em>$1</em>');
 }
 
-// ── Field Component ────────────────────────────────────────────────────────────
+// ── Premium Field Component ────────────────────────────────────────────────────────────
 interface FieldProps {
   label: string;
   name: string;
@@ -85,23 +87,141 @@ interface FieldProps {
   placeholder?: string;
   multi?: boolean;
   type?: string;
+  isAiFilling?: boolean;
 }
 
-function Field({ label, name, value, onChange, placeholder, multi, type = "text" }: FieldProps) {
+function Field({ label, name, value, onChange, placeholder, multi, type = "text", isAiFilling }: FieldProps) {
   return (
-    <div className="mb-4">
-      <label className="block text-xs font-medium mb-1.5 ml-0.5" style={{ color: 'var(--color-ink-muted)' }}>{label}</label>
-      {multi ? (
-        <textarea 
-          name={name} value={value} onChange={onChange} placeholder={placeholder} 
-          className="premium-input resize-none h-20" 
-        />
-      ) : (
-        <input 
-          type={type} name={name} value={value} onChange={onChange} placeholder={placeholder} 
-          className="premium-input" 
-        />
+    <motion.div 
+      variants={{ hidden: { opacity: 0, y: 5 }, show: { opacity: 1, y: 0 } }}
+      className="flex flex-col gap-2 w-full mb-5"
+    >
+      <label htmlFor={name} className="text-[14px] font-medium ml-1" style={{ color: 'var(--color-ink-muted)' }}>
+        {label}
+      </label>
+      <div className="relative">
+        {isAiFilling && (
+          <motion.div
+            layoutId={`ai-highlight-${name}`}
+            className="absolute inset-0 rounded-xl bg-indigo-500/20 z-0"
+            animate={{ opacity: [0.3, 0.8, 0.3] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+        )}
+        {multi ? (
+          <textarea
+            id={name} name={name} value={value} onChange={onChange} placeholder={placeholder}
+            className={cn(
+              "premium-input min-h-[140px] resize-y"
+            )}
+          />
+        ) : (
+          <input
+            id={name} type={type} name={name} value={value} onChange={onChange} placeholder={placeholder}
+            className="premium-input"
+          />
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Upload Dropzone Component ─────────────────────────────────────────────────────────
+interface UploadDropzoneProps {
+  onUpload: (file: File) => Promise<void>;
+  status: "idle" | "uploading" | "success";
+  setStatus: (status: "idle" | "uploading" | "success") => void;
+}
+
+function UploadDropzone({ onUpload, status, setStatus }: UploadDropzoneProps) {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    setStatus("uploading");
+    await onUpload(file);
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setStatus("uploading");
+    await onUpload(file);
+  };
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label="Upload RFP Document"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          document.getElementById('file-upload')?.click();
+        }
+      }}
+      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+      onDragLeave={() => setIsDragging(false)}
+      onDrop={handleDrop}
+      className={cn(
+        "relative w-full h-32 rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all duration-300 cursor-pointer overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+        isDragging ? "border-indigo-500 bg-indigo-500/5" : "border-black/10 bg-black/5 hover:bg-black/10 hover:border-black/20",
+        status === "success" && "border-emerald-500/50 bg-emerald-500/5"
       )}
+    >
+      <label className="absolute inset-0 cursor-pointer w-full h-full z-10" htmlFor="file-upload">
+        <input id="file-upload" type="file" accept=".pdf,.docx,.txt" onChange={handleFileChange} className="hidden" tabIndex={-1} />
+      </label>
+      
+      <AnimatePresence mode="wait">
+        {status === "idle" && (
+          <motion.div
+            key="idle"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="flex flex-col items-center text-zinc-400 pointer-events-none"
+          >
+            <UploadCloud className="w-6 h-6 mb-2 group-hover:text-black/70 transition-colors" style={{ color: 'var(--color-ink-faint)' }} />
+            <p className="text-sm font-medium group-hover:text-black/80 transition-colors" style={{ color: 'var(--color-ink-muted)' }}>Drag & drop your RFP</p>
+            <p className="text-xs mt-1 transition-colors" style={{ color: 'var(--color-ink-faint)' }}>PDF or DOCX</p>
+          </motion.div>
+        )}
+
+        {status === "uploading" && (
+          <motion.div
+            key="uploading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="w-full max-w-[200px] pointer-events-none"
+          >
+            <div className="h-1.5 w-full bg-black/10 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-indigo-500" 
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 2, ease: "easeInOut" }}
+              />
+            </div>
+            <p className="text-xs text-center mt-3 font-medium" style={{ color: 'var(--color-ink-muted)' }}>Processing & Vectorizing...</p>
+          </motion.div>
+        )}
+
+        {status === "success" && (
+          <motion.div
+            key="success"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center text-emerald-400 pointer-events-none"
+          >
+            <CheckCircle2 className="w-6 h-6 mb-2" />
+            <p className="text-sm font-medium">RFP Processed</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -149,7 +269,7 @@ export default function Home() {
     content: string; confidence_score: number; requires_human_review: boolean;
   } | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const [extractedMeta, setExtractedMeta] = useState<Record<string, string> | null>(null);
   const [autofilling, setAutofilling] = useState(false);
 
@@ -206,12 +326,19 @@ export default function Home() {
     });
   };
 
-  const handleUpload = async () => {
-    if (!file) return toast.error("Please select a file.");
+  const uploadStatus = uploading ? "uploading" : (uploadDone ? "success" : "idle");
+  const setUploadStatus = (s: "idle" | "uploading" | "success") => {
+    if (s === "idle") { setUploading(false); setUploadDone(false); }
+    if (s === "uploading") { setUploading(true); setUploadDone(false); }
+    if (s === "success") { setUploading(false); setUploadDone(true); }
+  };
+
+  const handleUpload = async (fileToUpload: File) => {
     if (!session) return;
+    setFile(fileToUpload);
     setUploading(true);
     const form = new FormData();
-    form.append("file", file);
+    form.append("file", fileToUpload);
     form.append("org_id", orgId || "pending");
     try {
       const res = await fetch("http://localhost:8000/rfp/upload", {
@@ -227,8 +354,8 @@ export default function Home() {
           toast.success("RFP Processed & Vectorized Successfully!");
         }
       }
-      else { const d = await res.json(); toast.error("Upload failed: " + JSON.stringify(d)); }
-    } catch { toast.error("Cannot reach backend."); }
+      else { const d = await res.json(); toast.error("Upload failed: " + JSON.stringify(d)); setUploadDone(false); }
+    } catch { toast.error("Cannot reach backend."); setUploadDone(false); }
     finally { setUploading(false); }
   };
 
@@ -301,46 +428,28 @@ export default function Home() {
             >
 
               {/* Upload Card */}
-              <div className="surface-card p-6">
+              <div className="surface-card p-6 rounded-2xl shadow-xl">
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(255,255,255,0.15)' }}>1</div>
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">1</div>
                   <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Source Document</h2>
                 </div>
                 
-                <div className={`relative border border-dashed rounded-lg p-6 text-center mb-5 transition-all group cursor-pointer ${uploadDone ? '' : ''}`}
-                  style={{ borderColor: uploadDone ? 'var(--color-accent)' : 'var(--color-hairline-strong)', backgroundColor: uploadDone ? 'var(--color-accent-muted)' : 'var(--color-canvas)' }}>
-                  {uploadDone ? (
-                    <CheckCircle2 className="w-7 h-7 mx-auto mb-3" style={{ color: 'var(--color-accent)' }} />
-                  ) : (
-                    <UploadCloud className="w-7 h-7 mx-auto mb-3 transition-colors" style={{ color: 'var(--color-ink-faint)' }} />
-                  )}
-                  <div className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink)' }}>
-                    {uploadDone ? 'Processed & Vectorized' : 'Upload RFP (PDF, DOCX)'}
-                  </div>
-                  <label className="cursor-pointer text-xs font-medium underline underline-offset-2" style={{ color: 'var(--color-accent)' }}>
-                    <input type="file" accept=".pdf,.docx,.txt" onChange={(e) => { setFile(e.target.files?.[0] || null); setUploadDone(false); }} className="hidden" />
-                    {file ? file.name : 'Browse files'}
-                  </label>
-                </div>
-                <button 
-                  onClick={handleUpload} 
-                  disabled={uploading || !file} 
-                  className="premium-btn btn-primary w-full disabled:opacity-50"
-                >
-                  {uploading ? 'Processing...' : 'Upload File'}
-                </button>
+                <UploadDropzone onUpload={handleUpload} status={uploadStatus} setStatus={setUploadStatus} />
               </div>
 
               {/* Context Card */}
               <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-                className="surface-card p-6"
+                initial="hidden"
+                animate="show"
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.4, delay: 0.1, staggerChildren: 0.05, delayChildren: 0.2 } }
+                }}
+                className="surface-card p-6 rounded-2xl shadow-xl"
               >
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(255,255,255,0.15)' }}>2</div>
+                    <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">2</div>
                     <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Strategic Context</h2>
                   </div>
                   <div className="flex items-center gap-2">
@@ -365,16 +474,16 @@ export default function Home() {
                 </div>
                 
                 <div className="grid grid-cols-2 gap-x-4">
-                  <Field label="Client Name" name="client_name" value={formData.client_name} onChange={handleChange} placeholder="Acme Corp" />
-                  <Field label="Industry" name="industry" value={formData.industry} onChange={handleChange} placeholder="SaaS" />
+                  <Field label="Client Name" name="client_name" value={formData.client_name} onChange={handleChange} placeholder="Acme Corp" isAiFilling={autofilling} />
+                  <Field label="Industry" name="industry" value={formData.industry} onChange={handleChange} placeholder="SaaS" isAiFilling={autofilling} />
                 </div>
-                <Field label="RFP Title" name="rfp_title" value={formData.rfp_title} onChange={handleChange} placeholder="Q3 Platform Migration" />
+                <Field label="RFP Title" name="rfp_title" value={formData.rfp_title} onChange={handleChange} placeholder="Q3 Platform Migration" isAiFilling={autofilling} />
                 
                 <div className="my-5" style={{ borderTop: '1px solid var(--color-hairline)' }}></div>
 
                 <div className="grid grid-cols-2 gap-x-4">
                   <Field label="Your Organization" name="org_name" value={formData.org_name} onChange={handleChange} placeholder="BidForge" />
-                  <Field label="Deal Size" name="deal_size" value={formData.deal_size} onChange={handleChange} placeholder="$1,500,000" />
+                  <Field label="Deal Size" name="deal_size" value={formData.deal_size} onChange={handleChange} placeholder="$1,500,000" isAiFilling={autofilling} />
                 </div>
                 <div className="grid grid-cols-2 gap-x-4">
                   <Field label="Contact Person" name="contact_name" value={formData.contact_name} onChange={handleChange} placeholder="John Smith" />
@@ -387,29 +496,44 @@ export default function Home() {
 
                 <div className="my-5 border-t border-white/10"></div>
 
-                <Field label="Key Differentiators" name="differentiators" value={formData.differentiators} onChange={handleChange} placeholder="Proprietary engine, 24/7 support..." multi />
-                <Field label="Pain Points" name="pain_points" value={formData.pain_points} onChange={handleChange} placeholder="High latency, poor analytics..." multi />
-                <Field label="Compliance" name="compliance_reqs" value={formData.compliance_reqs} onChange={handleChange} placeholder="SOC 2, GDPR..." multi />
-                <Field label="Case Studies" name="case_studies" value={formData.case_studies} onChange={handleChange} placeholder="Migrated GlobalBank in 3 months..." multi />
+                <Field label="Key Differentiators" name="differentiators" value={formData.differentiators} onChange={handleChange} placeholder="Proprietary engine, 24/7 support..." multi isAiFilling={autofilling} />
+                <Field label="Pain Points" name="pain_points" value={formData.pain_points} onChange={handleChange} placeholder="High latency, poor analytics..." multi isAiFilling={autofilling} />
+                <Field label="Compliance" name="compliance_reqs" value={formData.compliance_reqs} onChange={handleChange} placeholder="SOC 2, GDPR..." multi isAiFilling={autofilling} />
+                <Field label="Case Studies" name="case_studies" value={formData.case_studies} onChange={handleChange} placeholder="Migrated GlobalBank in 3 months..." multi isAiFilling={autofilling} />
                 
-                <div className="mt-6 relative group">
-                  <button
+                <div className="mt-6 relative">
+                  <motion.button
+                    whileHover={{ scale: generating ? 1 : 1.01 }}
+                    whileTap={{ scale: generating ? 1 : 0.98 }}
                     onClick={handleGenerate}
                     disabled={generating}
-                    className="premium-btn w-full btn-primary relative z-10 font-semibold"
+                    aria-busy={generating}
+                    className={`
+                      relative w-full overflow-hidden rounded-xl px-4 py-3 font-semibold text-sm
+                      transition-all duration-300 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2
+                      ${generating ? 'bg-black/5 text-black/40 cursor-not-allowed' : 'btn-primary shadow-sm'}
+                    `}
                   >
+                    {generating && (
+                      <motion.div
+                        className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/10 to-transparent"
+                        animate={{ x: ["-100%", "200%"] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                      />
+                    )}
+
                     {generating ? (
                       <>
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
-                        Synthesizing...
+                        <Loader2 className="w-4 h-4 animate-spin text-zinc-600" />
+                        <span className="text-zinc-400">Synthesizing Proposal...</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles size={16} />
-                        Generate Proposal
+                        <Sparkles className="w-4 h-4 text-white transition-transform group-hover:rotate-12" />
+                        <span className="text-white">Generate Proposal</span>
                       </>
                     )}
-                  </button>
+                  </motion.button>
                 </div>
               </motion.div>
             </motion.div>
@@ -420,12 +544,12 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
               ref={outputRef} 
-              className="lg:col-span-7 h-full sticky top-0 pb-6"
+              className="lg:col-span-7 h-full sticky top-0 -mb-6"
             >
-              <div className="surface-card flex flex-col h-[calc(100vh-104px)] overflow-hidden">
+              <div className="surface-card flex flex-col h-[calc(100vh-72px)] overflow-hidden rounded-b-none border-b-0">
                 
                 {/* Toolbar */}
-                <div className="px-6 py-3.5 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-hairline)', backgroundColor: 'var(--color-surface-1)' }}>
+                <div className="px-6 py-3.5 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-hairline)' }}>
                   <div className="flex items-center gap-3">
                     <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Document Output</h2>
                     {proposalData && (
@@ -485,7 +609,9 @@ export default function Home() {
                     className="max-w-[800px] mx-auto min-h-full doc-prose"
                   >
                     {proposalData ? (
-                      <div className="animate-fade-in" dangerouslySetInnerHTML={{ __html: renderMarkdown(proposalData.content) }} />
+                      <div className="animate-fade-in w-full h-full">
+                        <TiptapEditor content={renderMarkdown(proposalData.content)} />
+                      </div>
                     ) : (
                       <div className="h-full flex flex-col items-center justify-center text-zinc-500 py-20">
                         {generating ? (

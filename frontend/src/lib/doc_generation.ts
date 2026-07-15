@@ -76,6 +76,7 @@ export const generatePdf = async (elementId: string, filename: string = "Proposa
     image:        { type: 'jpeg', quality: 0.98 },
     html2canvas:  { scale: 2, useCORS: true, logging: false },
     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 
   // Generate PDF from the isolated iframe body
