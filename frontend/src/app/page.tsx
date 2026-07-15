@@ -342,6 +342,7 @@ export default function Home() {
     try {
       const res = await fetch("http://localhost:8000/rfp/upload", {
         method: "POST",
+        headers: { "Authorization": `Bearer ${session.access_token}` },
         body: form,
       });
       if (res.ok) { 
