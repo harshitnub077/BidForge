@@ -2,11 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import Auth from "@/components/Auth";
 import { Logo } from "@/components/Logo";
 import { Session } from "@supabase/supabase-js";
 import { 
-  LayoutDashboard, FolderKanban, Users, BarChart3, Settings, 
   UploadCloud, Sparkles, CheckCircle2, Download, Copy, Share2, Wand2, Loader2
 } from "lucide-react";
 import { toast } from "sonner";
@@ -250,7 +248,6 @@ function NavItem({ icon: Icon, label, active = false }: NavItemProps) {
 export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
   const [orgId, setOrgId] = useState<string | null>(null);
-  const [authError, setAuthError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
   const STORAGE_KEY = "bidforge_form_data";
@@ -280,7 +277,7 @@ export default function Home() {
 
   const fetchOrgId = async (userId: string) => {
     const { data, error } = await supabase.from('profiles').select('org_id').eq('id', userId).single();
-    if (error) setAuthError(error.message);
+    if (error) console.error(error.message);
     else if (data) setOrgId(data.org_id);
   };
 
@@ -297,7 +294,6 @@ export default function Home() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (session) fetchOrgId(session.user.id);
-      else { setOrgId(null); setAuthError(null); }
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -346,7 +342,6 @@ export default function Home() {
     try {
       const res = await fetch("http://localhost:8000/rfp/upload", {
         method: "POST",
-        headers: { "Authorization": `Bearer ${session.access_token}` },
         body: form,
       });
       if (res.ok) { 
@@ -382,7 +377,6 @@ export default function Home() {
     try {
       const res = await fetch("http://localhost:8000/proposal/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },
         body: JSON.stringify({ org_id: orgId || "pending", ...formData }),
       });
       if (!res.ok) {
