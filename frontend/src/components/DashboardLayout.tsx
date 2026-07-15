@@ -183,7 +183,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsCollapsed(!isCollapsed)} 
-              className="text-zinc-500 hover:text-zinc-200 transition-colors"
+              className="hover:opacity-80 transition-opacity"
+              style={{ color: 'var(--color-ink-muted)' }}
               aria-expanded={!isCollapsed}
               aria-controls="sidebar-navigation"
               aria-label="Toggle sidebar"
@@ -192,15 +193,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
             <div className="w-px h-4 bg-white/10" />
             <div className="flex items-center gap-2 text-[13px]">
-              <span className="text-zinc-500 font-medium">BidForge Workspace</span>
-              <span className="text-zinc-700">/</span>
-              <span className="text-zinc-200 font-medium">{pathname === "/" ? "New Proposal" : pathname.substring(1)}</span>
+              <span className="font-medium" style={{ color: 'var(--color-ink-muted)' }}>BidForge Workspace</span>
+              <span style={{ color: 'var(--color-ink-faint)' }}>/</span>
+              <span className="font-medium" style={{ color: 'var(--color-ink)' }}>{pathname === "/" ? "New Proposal" : pathname.substring(1)}</span>
             </div>
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 bg-black/5 border border-black/5 rounded-md px-2.5 py-1.5 text-xs text-zinc-500 w-48 shadow-inner hover:border-black/10 transition-colors cursor-text">
-              <Search size={14} className="text-zinc-500" />
+            <div className="hidden sm:flex items-center gap-2 bg-[var(--color-surface-1)] border border-[var(--color-hairline)] rounded-md px-2.5 py-1.5 text-xs w-48 shadow-inner hover:border-[var(--color-hairline-strong)] transition-colors cursor-text" style={{ color: 'var(--color-ink-muted)' }}>
+              <Search size={14} style={{ color: 'var(--color-ink-faint)' }} />
               <span>Search projects...</span>
               <div className="ml-auto flex gap-1">
                 <kbd className="rounded px-1 py-0.5 text-[9px] font-sans border shadow-sm" style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)', color: 'var(--color-ink-faint)' }}>⌘</kbd>

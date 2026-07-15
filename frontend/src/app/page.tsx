@@ -168,7 +168,7 @@ function UploadDropzone({ onUpload, status, setStatus }: UploadDropzoneProps) {
       onDrop={handleDrop}
       className={cn(
         "relative w-full h-32 rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all duration-300 cursor-pointer overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
-        isDragging ? "border-indigo-500 bg-indigo-500/5" : "border-black/10 bg-black/5 hover:bg-black/10 hover:border-black/20",
+        isDragging ? "border-indigo-500 bg-indigo-500/5" : "border-[var(--color-hairline)] bg-[var(--color-surface-1)] hover:bg-[var(--color-surface-2)] hover:border-[var(--color-hairline-strong)]",
         status === "success" && "border-emerald-500/50 bg-emerald-500/5"
       )}
     >
@@ -183,10 +183,11 @@ function UploadDropzone({ onUpload, status, setStatus }: UploadDropzoneProps) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="flex flex-col items-center text-zinc-400 pointer-events-none"
+            className="flex flex-col items-center pointer-events-none"
+            style={{ color: 'var(--color-ink-muted)' }}
           >
-            <UploadCloud className="w-6 h-6 mb-2 group-hover:text-black/70 transition-colors" style={{ color: 'var(--color-ink-faint)' }} />
-            <p className="text-sm font-medium group-hover:text-black/80 transition-colors" style={{ color: 'var(--color-ink-muted)' }}>Drag & drop your RFP</p>
+            <UploadCloud className="w-6 h-6 mb-2 transition-colors" style={{ color: 'var(--color-ink-faint)' }} />
+            <p className="text-sm font-medium transition-colors" style={{ color: 'var(--color-ink-muted)' }}>Drag & drop your RFP</p>
             <p className="text-xs mt-1 transition-colors" style={{ color: 'var(--color-ink-faint)' }}>PDF or DOCX</p>
           </motion.div>
         )}
@@ -198,7 +199,7 @@ function UploadDropzone({ onUpload, status, setStatus }: UploadDropzoneProps) {
             animate={{ opacity: 1 }}
             className="w-full max-w-[200px] pointer-events-none"
           >
-            <div className="h-1.5 w-full bg-black/10 rounded-full overflow-hidden">
+            <div className="h-1.5 w-full bg-[var(--color-hairline)] rounded-full overflow-hidden">
               <motion.div 
                 className="h-full bg-indigo-500" 
                 initial={{ width: "0%" }}
@@ -235,10 +236,12 @@ interface NavItemProps {
 
 function NavItem({ icon: Icon, label, active = false }: NavItemProps) {
   return (
-    <button className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
-      active ? 'bg-zinc-200/50 text-zinc-900 font-medium' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100/50'
-    }`}>
-      <Icon size={18} className={active ? 'text-zinc-950' : 'text-zinc-400'} />
+    <button      className={cn(
+        'w-full flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 transition-colors group cursor-pointer',
+        active ? 'bg-[var(--color-surface-2)] font-medium' : 'hover:bg-[var(--color-surface-1)]'
+      )}
+      style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-muted)' }}`}>
+      <Icon size={18} style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-faint)' }} />
       {label}
     </button>
   );
@@ -511,7 +514,7 @@ export default function Home() {
                     className={`
                       relative w-full overflow-hidden rounded-xl px-4 py-3 font-semibold text-sm
                       transition-all duration-300 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2
-                      ${generating ? 'bg-black/5 text-black/40 cursor-not-allowed' : 'btn-primary shadow-sm'}
+                      ${generating ? 'bg-[var(--color-surface-1)] cursor-not-allowed' : 'btn-primary shadow-sm'}
                     `}
                   >
                     {generating && (
@@ -524,8 +527,8 @@ export default function Home() {
 
                     {generating ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin text-zinc-600" />
-                        <span className="text-zinc-400">Synthesizing Proposal...</span>
+                        <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--color-ink-faint)' }} />
+                        <span style={{ color: 'var(--color-ink-muted)' }}>Synthesizing Proposal...</span>
                       </>
                     ) : (
                       <>
@@ -613,7 +616,7 @@ export default function Home() {
                         <TiptapEditor content={renderMarkdown(proposalData.content)} />
                       </div>
                     ) : (
-                      <div className="h-full flex flex-col items-center justify-center text-zinc-500 py-20">
+                      <div className="h-full flex flex-col items-center justify-center py-20" style={{ color: 'var(--color-ink-muted)' }}>
                         {generating ? (
                           <>
                             <Logo className="w-10 h-10 mb-6 animate-pulse-glow" />
