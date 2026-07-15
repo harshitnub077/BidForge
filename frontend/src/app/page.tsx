@@ -9,6 +9,8 @@ import {
   LayoutDashboard, FolderKanban, Users, BarChart3, Settings, 
   UploadCloud, Sparkles, CheckCircle2, Download, Copy, Share2, Wand2
 } from "lucide-react";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 // ── Markdown renderer ──────────────────────────────────────────────────────────
 function renderMarkdown(text: string): string {
@@ -205,7 +207,7 @@ export default function Home() {
   };
 
   const handleUpload = async () => {
-    if (!file) return alert("Please select a file.");
+    if (!file) return toast.error("Please select a file.");
     if (!session) return;
     setUploading(true);
     const form = new FormData();
@@ -222,15 +224,16 @@ export default function Home() {
         const data = await res.json();
         if (data.extracted_metadata) {
           setExtractedMeta(data.extracted_metadata);
+          toast.success("RFP Processed & Vectorized Successfully!");
         }
       }
-      else { const d = await res.json(); alert("Upload failed: " + JSON.stringify(d)); }
-    } catch { alert("Cannot reach backend."); }
+      else { const d = await res.json(); toast.error("Upload failed: " + JSON.stringify(d)); }
+    } catch { toast.error("Cannot reach backend."); }
     finally { setUploading(false); }
   };
 
   const handleGenerate = async () => {
-    if (!formData.client_name || !formData.rfp_title) return alert("Client name and RFP title are required.");
+    if (!formData.client_name || !formData.rfp_title) return toast.error("Client name and RFP title are required.");
     if (!session) return;
     setGenerating(true);
     // Dynamic Confidence Score Calculation
@@ -253,7 +256,7 @@ export default function Home() {
         body: JSON.stringify({ org_id: orgId || "pending", ...formData }),
       });
       if (!res.ok) {
-        alert("Generation failed.");
+        toast.error("Generation failed.");
         setGenerating(false);
         return;
       }
@@ -275,8 +278,9 @@ export default function Home() {
             firstScroll = true;
           }
         }
+        toast.success("Proposal Generated Successfully!");
       }
-    } catch { alert("Cannot reach backend."); }
+    } catch { toast.error("Cannot reach backend."); }
     finally {
       setGenerating(false);
       if (genTimerRef.current) { clearInterval(genTimerRef.current); genTimerRef.current = null; }
@@ -289,7 +293,12 @@ export default function Home() {
           <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
             {/* ── LEFT PANEL (Form) ── */}
-            <div className="lg:col-span-5 flex flex-col gap-6 animate-fade-in" style={{ animationDuration: '0.5s' }}>
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="lg:col-span-5 flex flex-col gap-6"
+            >
 
               {/* Upload Card */}
               <div className="glass-panel rounded-xl p-6">
@@ -322,7 +331,12 @@ export default function Home() {
               </div>
 
               {/* Context Card */}
-              <div className="glass-panel rounded-xl p-6 animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+                className="glass-panel rounded-xl p-6"
+              >
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-md bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 flex items-center justify-center text-xs font-medium shadow-[0_0_10px_rgba(99,102,241,0.2)]">2</div>
@@ -394,11 +408,17 @@ export default function Home() {
                     )}
                   </button>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* ── RIGHT PANEL (Preview) ── */}
-            <div ref={outputRef} className="lg:col-span-7 h-full sticky top-0 pb-6 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
+            <motion.div 
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              ref={outputRef} 
+              className="lg:col-span-7 h-full sticky top-0 pb-6"
+            >
               <div className="glass-panel rounded-xl flex flex-col h-[calc(100vh-104px)] overflow-hidden">
                 
                 {/* Toolbar */}
@@ -415,7 +435,10 @@ export default function Home() {
                   <div className="flex gap-2">
                     <button 
                       disabled={!proposalData}
-                      onClick={() => navigator.clipboard.writeText(proposalData?.content || "")}
+                      onClick={() => {
+                        navigator.clipboard.writeText(proposalData?.content || "");
+                        toast.success("Copied to clipboard!");
+                      }}
                       className="p-2 border border-white/10 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors bg-white/5"
                       title="Copy Markdown"
                     >
@@ -434,8 +457,14 @@ export default function Home() {
                     <button 
                       disabled={!proposalData}
                       onClick={async () => {
-                        const { generatePdf } = await import("@/lib/doc_generation");
-                        generatePdf("proposal-output", `${formData.client_name}_Proposal.pdf`, orgId || "");
+                        toast.loading("Generating PDF...", { id: "pdf" });
+                        try {
+                          const { generatePdf } = await import("@/lib/doc_generation");
+                          await generatePdf("proposal-output", `${formData.client_name}_Proposal.pdf`, orgId || "");
+                          toast.success("PDF generated!", { id: "pdf" });
+                        } catch (e) {
+                          toast.error("Failed to generate PDF.", { id: "pdf" });
+                        }
                       }}
                       className="flex items-center gap-2 px-3 py-1.5 btn-primary rounded-lg text-xs font-medium disabled:opacity-50 transition-all"
                     >
@@ -482,7 +511,7 @@ export default function Home() {
                 </div>
 
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>

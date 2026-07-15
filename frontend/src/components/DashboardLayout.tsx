@@ -9,6 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, FolderKanban, Users, BarChart3, Settings, Sparkles
 } from "lucide-react";
+import { Toaster, toast } from "sonner";
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -111,7 +112,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 const data = await res.json();
                 if (data.url) window.location.href = data.url;
               } catch (e) {
-                alert("Failed to create checkout session");
+                toast.error("Failed to create checkout session");
               }
             }}
             className="w-full mt-4 py-2 px-3 bg-gradient-to-r from-amber-200 to-yellow-400 hover:from-amber-300 hover:to-yellow-500 text-yellow-900 text-xs font-bold rounded-lg transition-all shadow-sm flex items-center justify-center gap-2"
@@ -152,6 +153,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </main>
 
+      <Toaster theme="dark" position="bottom-right" />
     </div>
   );
 }
