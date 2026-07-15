@@ -10,13 +10,13 @@ const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
+    transition: { staggerChildren: 0.08 }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  show: { opacity: 1, scale: 1, transition: { duration: 0.3 } }
+  hidden: { opacity: 0, scale: 0.97 },
+  show: { opacity: 1, scale: 1, transition: { duration: 0.25 } }
 };
 
 interface Client {
@@ -54,62 +54,65 @@ export default function ClientsPage() {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.35 }}
       className="max-w-[1200px] mx-auto"
     >
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 flex items-center justify-center shadow-[0_0_10px_rgba(99,102,241,0.2)]">
-          <Users size={20} />
+        <div className="w-9 h-9 rounded-lg flex items-center justify-center"
+          style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-hairline)' }}>
+          <Users size={18} style={{ color: 'var(--color-ink-muted)' }} />
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-white">Clients</h1>
-          <p className="text-sm text-zinc-400">Organizations you have generated proposals for.</p>
+          <h1 className="text-lg font-semibold" style={{ color: 'var(--color-ink)', letterSpacing: '-0.02em' }}>Clients</h1>
+          <p className="text-sm" style={{ color: 'var(--color-ink-faint)' }}>Organizations you have generated proposals for.</p>
         </div>
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="glass-panel rounded-xl p-6 h-36 flex flex-col justify-between">
+            <div key={i} className="surface-card p-6 h-32 flex flex-col justify-between">
               <div className="flex justify-between items-start">
-                <div className="w-10 h-10 rounded-lg bg-white/5 animate-pulse" />
-                <div className="w-12 h-5 rounded bg-white/5 animate-pulse" />
+                <div className="w-10 h-10 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--color-surface-2)' }} />
+                <div className="w-12 h-5 rounded animate-pulse" style={{ backgroundColor: 'var(--color-surface-2)' }} />
               </div>
-              <div className="w-3/4 h-5 rounded bg-white/5 animate-pulse" />
+              <div className="w-3/4 h-4 rounded animate-pulse" style={{ backgroundColor: 'var(--color-surface-2)' }} />
             </div>
           ))}
         </div>
       ) : clients.length === 0 ? (
-        <div className="text-center py-20 border border-dashed border-white/10 rounded-xl bg-white/5 glass-panel">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(99,102,241,0.15)]">
-            <Building2 className="w-8 h-8 text-indigo-400" />
+        <div className="text-center py-20 surface-card" style={{ borderStyle: 'dashed' }}>
+          <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
+            style={{ backgroundColor: 'var(--color-accent-muted)', border: '1px solid rgba(94,106,210,0.15)' }}>
+            <Building2 className="w-7 h-7" style={{ color: 'var(--color-accent)' }} />
           </div>
-          <p className="text-base text-white font-medium mb-1">No Clients Found</p>
-          <p className="text-sm text-zinc-400">Your clients will appear here after generating proposals.</p>
+          <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink)' }}>No Clients Found</p>
+          <p className="text-sm" style={{ color: 'var(--color-ink-faint)' }}>Your clients will appear here after generating proposals.</p>
         </div>
       ) : (
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
         >
           {clients.map((c, i) => (
-            <motion.div variants={itemVariants} key={i} className="glass-panel glass-panel-hover rounded-xl p-6 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="flex items-start justify-between mb-4 relative z-10">
-                <div className="w-10 h-10 rounded-lg bg-black/40 border border-white/10 flex items-center justify-center text-lg font-bold text-white shadow-inner">
+            <motion.div variants={itemVariants} key={i} className="surface-card surface-card-hover p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center text-base font-semibold"
+                  style={{ backgroundColor: 'var(--color-surface-3)', color: 'var(--color-ink)', border: '1px solid var(--color-hairline)' }}>
                   {c.name.charAt(0).toUpperCase()}
                 </div>
-                <span className="px-2 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 shadow-[0_0_8px_rgba(99,102,241,0.2)] rounded text-[10px] font-bold uppercase tracking-wider">
+                <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider"
+                  style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(94,106,210,0.15)' }}>
                   Active
                 </span>
               </div>
-              <h3 className="font-semibold text-white text-lg mb-1 relative z-10">{c.name}</h3>
-              <div className="flex items-center gap-2 text-sm text-zinc-400 relative z-10">
-                <Briefcase size={14} />
+              <h3 className="font-semibold text-base mb-1" style={{ color: 'var(--color-ink)', letterSpacing: '-0.01em' }}>{c.name}</h3>
+              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-ink-muted)' }}>
+                <Briefcase size={13} />
                 {c.proposals_count} Proposal{c.proposals_count !== 1 ? 's' : ''} Generated
               </div>
             </motion.div>

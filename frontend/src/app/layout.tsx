@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${interSans.variable} ${jetbrainsMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-white text-zinc-950 selection:bg-black/10">
+      <body className="min-h-full flex flex-col selection:bg-accent/20 selection:text-white">
         <DashboardLayout>
           {children}
         </DashboardLayout>

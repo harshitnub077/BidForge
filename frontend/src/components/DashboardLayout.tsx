@@ -22,10 +22,16 @@ function NavItem({ icon: Icon, label, active = false, onClick }: NavItemProps) {
   return (
     <button 
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
-      active ? 'bg-white/10 text-white font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]' : 'text-zinc-400 hover:text-white hover:bg-white/5'
-    }`}>
-      <Icon size={18} className={active ? 'text-white drop-shadow-md' : 'text-zinc-500'} />
+      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150"
+      style={{
+        backgroundColor: active ? 'var(--color-surface-2)' : 'transparent',
+        color: active ? 'var(--color-ink)' : 'var(--color-ink-muted)',
+        border: active ? '1px solid var(--color-hairline)' : '1px solid transparent',
+      }}
+      onMouseEnter={(e) => { if (!active) { e.currentTarget.style.backgroundColor = 'var(--color-surface-2)'; e.currentTarget.style.color = 'var(--color-ink)'; } }}
+      onMouseLeave={(e) => { if (!active) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--color-ink-muted)'; } }}
+    >
+      <Icon size={16} style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-faint)' }} />
       {label}
     </button>
   );
@@ -65,17 +71,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (!orgId) {
     return (
-      <div className="min-h-screen flex items-center justify-center flex-col gap-4 bg-zinc-950 p-4">
+      <div className="min-h-screen flex items-center justify-center flex-col gap-4 p-4" style={{ backgroundColor: 'var(--color-canvas)' }}>
         {authError ? (
-          <div className="max-w-md p-6 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
-            <h3 className="text-red-400 font-semibold mb-2">Database Error</h3>
-            <p className="text-sm text-red-300/80 mb-6">{authError}</p>
-            <button className="premium-btn bg-white/10 hover:bg-white/20 text-white" onClick={() => supabase.auth.signOut()}>Sign Out</button>
+          <div className="max-w-md p-6 rounded-xl text-center surface-card" style={{ borderColor: 'rgba(239,68,68,0.15)' }}>
+            <h3 className="font-semibold mb-2" style={{ color: '#fca5a5' }}>Database Error</h3>
+            <p className="text-sm mb-6" style={{ color: 'rgba(252,165,165,0.7)' }}>{authError}</p>
+            <button className="premium-btn btn-secondary" onClick={() => supabase.auth.signOut()}>Sign Out</button>
           </div>
         ) : (
           <div className="flex flex-col items-center">
-            <Logo className="w-12 h-12 mb-6 animate-pulse-glow" />
-            <div className="text-sm text-zinc-500 tracking-wide uppercase">Initializing Workspace...</div>
+            <Logo className="w-10 h-10 mb-6 animate-pulse-glow" />
+            <div className="text-xs font-medium tracking-widest uppercase" style={{ color: 'var(--color-ink-faint)' }}>Initializing Workspace…</div>
           </div>
         )}
       </div>
@@ -83,22 +89,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-transparent flex text-white">
-      {/* ── Sidebar Nav ── */}
-      <aside className="w-64 glass-panel rounded-r-2xl my-2 ml-2 flex flex-col z-20">
-        <div className="h-14 flex items-center px-6 border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <Logo className="w-6 h-6" />
-            <span className="font-semibold text-white tracking-tight text-base">BidForge</span>
+    <div className="min-h-screen flex" style={{ color: 'var(--color-ink)' }}>
+      {/* ── Sidebar ── */}
+      <aside className="w-60 flex flex-col border-r" style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)' }}>
+        <div className="h-14 flex items-center px-5 border-b" style={{ borderColor: 'var(--color-hairline)' }}>
+          <div className="flex items-center gap-2.5">
+            <Logo className="w-5 h-5" />
+            <span className="font-semibold text-sm tracking-tight" style={{ color: 'var(--color-ink)', letterSpacing: '-0.02em' }}>BidForge</span>
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto py-6 px-3 flex flex-col gap-1">
+        <div className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-0.5">
           <NavItem icon={LayoutDashboard} label="Dashboard" active={pathname === "/"} onClick={() => router.push("/")} />
           <NavItem icon={FolderKanban} label="Projects" active={pathname === "/projects"} onClick={() => router.push("/projects")} />
           <NavItem icon={Users} label="Clients" active={pathname === "/clients"} onClick={() => router.push("/clients")} />
           <NavItem icon={BarChart3} label="Analytics" active={pathname === "/analytics"} onClick={() => router.push("/analytics")} />
         </div>
-        <div className="p-3 border-t border-white/5">
+        <div className="p-3 border-t" style={{ borderColor: 'var(--color-hairline)' }}>
           <NavItem icon={Settings} label="Settings" />
           
           <button 
@@ -115,14 +121,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 toast.error("Failed to create checkout session");
               }
             }}
-            className="w-full mt-4 py-2 px-3 bg-gradient-to-r from-amber-200 to-yellow-400 hover:from-amber-300 hover:to-yellow-500 text-yellow-900 text-xs font-bold rounded-lg transition-all shadow-sm flex items-center justify-center gap-2"
+            className="w-full mt-3 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2"
+            style={{
+              backgroundColor: 'var(--color-accent-muted)',
+              color: '#a5b4fc',
+              border: '1px solid rgba(94,106,210,0.2)',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(94,106,210,0.25)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent-muted)'}
           >
-            <Sparkles size={14} /> Upgrade to Pro
+            <Sparkles size={13} /> Upgrade to Pro
           </button>
 
           <button 
             onClick={() => supabase.auth.signOut()}
-            className="w-full mt-2 py-2 text-xs font-medium text-zinc-500 hover:text-white transition-colors"
+            className="w-full mt-2 py-2 text-xs font-medium transition-colors"
+            style={{ color: 'var(--color-ink-faint)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-ink)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-ink-faint)'}
           >
             Sign out
           </button>
@@ -130,30 +146,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* ── Main Content Area ── */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
         
         {/* Topbar */}
-        <header className="h-14 glass-panel rounded-b-2xl mx-4 border-t-0 flex items-center justify-between px-6 relative z-20">
-          <h1 className="text-sm font-medium text-white capitalize">
+        <header className="h-14 flex items-center justify-between px-6 border-b shrink-0"
+          style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)' }}>
+          <h1 className="text-sm font-medium capitalize" style={{ color: 'var(--color-ink)', letterSpacing: '-0.01em' }}>
             {pathname === "/" ? "Create New Proposal" : pathname.substring(1)}
           </h1>
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-full bg-indigo-500/20 border border-indigo-500/50 flex items-center justify-center text-indigo-300 font-bold text-xs shadow-[0_0_10px_rgba(99,102,241,0.2)]">
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold"
+              style={{ backgroundColor: 'var(--color-surface-3)', color: 'var(--color-ink-muted)', border: '1px solid var(--color-hairline)' }}>
               {session.user.email?.charAt(0).toUpperCase()}
             </div>
-            <span className="text-sm font-medium text-zinc-400">{session.user.email}</span>
+            <span className="text-[13px]" style={{ color: 'var(--color-ink-muted)' }}>{session.user.email}</span>
           </div>
         </header>
 
         {/* Dynamic Content */}
-        <div className="flex-1 overflow-y-auto p-6 relative">
-          {/* We pass session and orgId down via Context or cloneElement if needed, 
-              but since we're using Supabase client directly in pages, we can just render children. */}
+        <div className="flex-1 overflow-y-auto p-6 relative" style={{ backgroundColor: 'var(--color-canvas)' }}>
           {children}
         </div>
       </main>
 
-      <Toaster theme="dark" position="bottom-right" />
+      <Toaster 
+        theme="dark" 
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            backgroundColor: 'var(--color-surface-2)',
+            border: '1px solid var(--color-hairline)',
+            color: 'var(--color-ink)',
+          }
+        }}
+      />
     </div>
   );
 }

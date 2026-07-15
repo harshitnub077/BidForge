@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Logo } from '@/components/Logo';
+import { motion } from 'framer-motion';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -44,32 +45,47 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+      style={{ backgroundColor: 'var(--color-canvas)' }}>
 
+      {/* Ambient glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full opacity-[0.07]"
+        style={{ background: 'radial-gradient(ellipse, var(--color-accent), transparent 70%)' }} />
 
-      <div className="w-full max-w-[400px] relative z-10 animate-fade-in" style={{ animationDuration: '0.8s' }}>
-        
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-[400px] relative z-10"
+      >
         {/* Header */}
         <div className="text-center mb-10 flex flex-col items-center">
-          <Logo className="w-16 h-16 mb-4 animate-float" />
-          <h1 className="text-2xl font-semibold text-zinc-950 tracking-tight mb-2">
-            Welcome to <span className="font-bold text-black">BidForge</span>
+          <Logo className="w-14 h-14 mb-5" />
+          <h1 className="text-2xl font-semibold tracking-tight mb-2" style={{ color: 'var(--color-ink)', letterSpacing: '-0.03em' }}>
+            Welcome to <span className="font-bold">BidForge</span>
           </h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
             {isLogin ? 'Sign in to access your workspace' : 'Create an account to get started'}
           </p>
         </div>
 
-        <div className="bg-white border border-zinc-200 rounded-xl p-8 shadow-sm relative">
-          
+        <div className="surface-card p-8 relative">
           {/* Decorative Top Highlight */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px"
+            style={{ background: 'linear-gradient(to right, transparent, var(--color-hairline-strong), transparent)' }} />
 
           {/* Google Button */}
           <button
             onClick={handleGoogleAuth}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 py-2 px-4 rounded-md text-sm font-medium text-zinc-700 bg-white hover:bg-zinc-50 border border-zinc-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-black/10 mb-6 group shadow-sm"
+            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 mb-6 group"
+            style={{
+              backgroundColor: 'var(--color-surface-2)',
+              border: '1px solid var(--color-hairline)',
+              color: 'var(--color-ink)',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-hairline-strong)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-3)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-hairline)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-2)'; }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" className="opacity-80 group-hover:opacity-100 transition-opacity">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -81,21 +97,22 @@ export default function Auth() {
           </button>
 
           <div className="relative mb-6 flex items-center justify-center">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-zinc-200"></div></div>
-            <span className="relative px-3 bg-white text-xs font-medium text-zinc-400 uppercase tracking-widest">Or</span>
+            <div className="absolute inset-0 flex items-center"><div className="w-full" style={{ borderTop: '1px solid var(--color-hairline)' }} /></div>
+            <span className="relative px-3 text-xs font-medium uppercase tracking-widest"
+              style={{ backgroundColor: 'var(--color-surface-1)', color: 'var(--color-ink-faint)' }}>Or</span>
           </div>
 
           {/* Email Form */}
           <form onSubmit={handleAuth} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-1.5 ml-1">Email Address</label>
+              <label className="block text-xs font-medium mb-1.5 ml-0.5" style={{ color: 'var(--color-ink-muted)' }}>Email Address</label>
               <input
                 type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                 className="premium-input" placeholder="you@company.com"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-1.5 ml-1">Password</label>
+              <label className="block text-xs font-medium mb-1.5 ml-0.5" style={{ color: 'var(--color-ink-muted)' }}>Password</label>
               <input
                 type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
                 className="premium-input" placeholder="••••••••"
@@ -103,14 +120,18 @@ export default function Auth() {
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg text-sm border bg-red-50 text-red-600 border-red-200">
+              <div className="p-3 rounded-lg text-sm" style={{
+                border: '1px solid rgba(239,68,68,0.2)',
+                backgroundColor: 'rgba(239,68,68,0.05)',
+                color: '#fca5a5',
+              }}>
                 {error}
               </div>
             )}
 
             <button
               type="submit" disabled={loading}
-              className="premium-btn w-full bg-black hover:bg-zinc-800 text-white mt-6 disabled:opacity-50 shadow-md"
+              className="premium-btn btn-primary w-full mt-6 disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -125,12 +146,15 @@ export default function Auth() {
         <div className="text-center mt-8">
           <button
             onClick={() => { setIsLogin(!isLogin); setError(''); }}
-            className="text-sm text-zinc-500 hover:text-zinc-300 font-medium transition-colors"
+            className="text-sm font-medium transition-colors"
+            style={{ color: 'var(--color-ink-faint)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-ink)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-ink-faint)'}
           >
             {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

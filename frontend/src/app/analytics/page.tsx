@@ -18,6 +18,7 @@ const chartData = [
 
 export default function AnalyticsPage() {
   const [session, setSession] = useState<Session | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [analytics, setAnalytics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -45,122 +46,129 @@ export default function AnalyticsPage() {
   }, [session]);
 
   return (
-    <div className="max-w-[1200px] mx-auto animate-fade-in">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      className="max-w-[1200px] mx-auto"
+    >
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 flex items-center justify-center shadow-[0_0_10px_rgba(99,102,241,0.2)]">
-          <BarChart3 size={20} />
+        <div className="w-9 h-9 rounded-lg flex items-center justify-center"
+          style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-hairline)' }}>
+          <BarChart3 size={18} style={{ color: 'var(--color-ink-muted)' }} />
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-white">Analytics</h1>
-          <p className="text-sm text-zinc-400">Track your proposal generation metrics.</p>
+          <h1 className="text-lg font-semibold" style={{ color: 'var(--color-ink)', letterSpacing: '-0.02em' }}>Analytics</h1>
+          <p className="text-sm" style={{ color: 'var(--color-ink-faint)' }}>Track your proposal generation metrics.</p>
         </div>
       </div>
 
       {loading ? (
-        <div className="text-sm text-zinc-400">Loading analytics...</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="surface-card p-6 h-28 flex flex-col justify-between">
+              <div className="w-24 h-4 rounded animate-pulse" style={{ backgroundColor: 'var(--color-surface-2)' }} />
+              <div className="w-16 h-8 rounded animate-pulse" style={{ backgroundColor: 'var(--color-surface-2)' }} />
+            </div>
+          ))}
+        </div>
       ) : !analytics ? (
-        <div className="text-sm text-zinc-400">Failed to load analytics.</div>
+        <div className="text-sm" style={{ color: 'var(--color-ink-faint)' }}>Failed to load analytics.</div>
       ) : (
         <motion.div 
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+          transition={{ duration: 0.35 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8"
         >
-          
-          <div className="glass-panel rounded-xl p-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="flex items-center gap-2 text-zinc-400 mb-4 relative z-10">
-              <FileText size={16} />
-              <h3 className="text-sm font-medium uppercase tracking-wider">Total Proposals</h3>
+          <div className="surface-card surface-card-hover p-6">
+            <div className="flex items-center gap-2 mb-4" style={{ color: 'var(--color-ink-faint)' }}>
+              <FileText size={15} />
+              <h3 className="text-[11px] font-medium uppercase tracking-wider">Total Proposals</h3>
             </div>
-            <div className="text-4xl font-bold text-white relative z-10">{analytics.total_proposals}</div>
-            <p className="text-xs text-indigo-400 font-medium mt-2 flex items-center gap-1 relative z-10">
-              <TrendingUp size={14} /> +12% this month
+            <div className="text-3xl font-bold" style={{ color: 'var(--color-ink)', letterSpacing: '-0.03em' }}>{analytics.total_proposals}</div>
+            <p className="text-xs font-medium mt-2 flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
+              <TrendingUp size={13} /> +12% this month
             </p>
           </div>
 
-          <div className="glass-panel rounded-xl p-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="flex items-center gap-2 text-zinc-400 mb-4 relative z-10">
-              <Zap size={16} />
-              <h3 className="text-sm font-medium uppercase tracking-wider">Time Saved</h3>
+          <div className="surface-card surface-card-hover p-6">
+            <div className="flex items-center gap-2 mb-4" style={{ color: 'var(--color-ink-faint)' }}>
+              <Zap size={15} />
+              <h3 className="text-[11px] font-medium uppercase tracking-wider">Time Saved</h3>
             </div>
-            <div className="text-4xl font-bold text-white relative z-10">{analytics.total_proposals * 4} <span className="text-lg text-zinc-500 font-medium">hrs</span></div>
-            <p className="text-xs text-zinc-500 font-medium mt-2 relative z-10">
+            <div className="text-3xl font-bold" style={{ color: 'var(--color-ink)', letterSpacing: '-0.03em' }}>
+              {analytics.total_proposals * 4} <span className="text-base font-medium" style={{ color: 'var(--color-ink-faint)' }}>hrs</span>
+            </div>
+            <p className="text-xs font-medium mt-2" style={{ color: 'var(--color-ink-faint)' }}>
               Based on avg 4 hours per proposal
             </p>
           </div>
 
-          <div className="glass-panel rounded-xl p-6 bg-indigo-500/10 border-indigo-500/30 text-white relative overflow-hidden group shadow-[0_0_20px_rgba(99,102,241,0.1)]">
-             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="flex items-center gap-2 text-indigo-300 mb-4 relative z-10">
-              <BarChart3 size={16} />
-              <h3 className="text-sm font-medium uppercase tracking-wider">Proposals Won</h3>
+          <div className="surface-card surface-card-hover p-6" style={{ borderColor: 'rgba(94,106,210,0.15)' }}>
+            <div className="flex items-center gap-2 mb-4" style={{ color: 'var(--color-accent)' }}>
+              <BarChart3 size={15} />
+              <h3 className="text-[11px] font-medium uppercase tracking-wider">Proposals Won</h3>
             </div>
-            <div className="text-4xl font-bold relative z-10">{analytics.won_proposals}</div>
-            <p className="text-xs text-indigo-400 font-medium mt-2 relative z-10">
+            <div className="text-3xl font-bold" style={{ color: 'var(--color-ink)', letterSpacing: '-0.03em' }}>{analytics.won_proposals}</div>
+            <p className="text-xs font-medium mt-2" style={{ color: 'var(--color-accent)' }}>
               Record wins in the Dashboard
             </p>
           </div>
-
         </motion.div>
       )}
 
       {/* ── Charts ── */}
       {!loading && analytics && (
         <motion.div 
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          transition={{ duration: 0.35, delay: 0.1 }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-5"
         >
-          {/* Area Chart */}
-          <div className="glass-panel rounded-xl p-6">
-            <h3 className="text-sm font-medium text-white mb-6 uppercase tracking-wider">Generation Trends</h3>
-            <div className="h-[250px] w-full">
+          <div className="surface-card p-6">
+            <h3 className="text-[11px] font-medium uppercase tracking-wider mb-6" style={{ color: 'var(--color-ink-faint)' }}>Generation Trends</h3>
+            <div className="h-[240px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorProposals" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#5e6ad2" stopOpacity={0.25}/>
+                      <stop offset="95%" stopColor="#5e6ad2" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                  <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                  <XAxis dataKey="name" stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
+                  <YAxis stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
                   <RechartsTooltip 
-                    contentStyle={{ backgroundColor: 'rgba(9, 9, 11, 0.9)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                    itemStyle={{ color: '#fff' }}
+                    contentStyle={{ backgroundColor: '#111113', borderColor: 'rgba(255,255,255,0.06)', borderRadius: '8px', fontSize: '12px' }}
+                    itemStyle={{ color: '#f7f8f8' }}
                   />
-                  <Area type="monotone" dataKey="proposals" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorProposals)" />
+                  <Area type="monotone" dataKey="proposals" stroke="#5e6ad2" strokeWidth={2} fillOpacity={1} fill="url(#colorProposals)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          {/* Bar Chart */}
-          <div className="glass-panel rounded-xl p-6">
-            <h3 className="text-sm font-medium text-white mb-6 uppercase tracking-wider">Win Rate by Month</h3>
-            <div className="h-[250px] w-full">
+          <div className="surface-card p-6">
+            <h3 className="text-[11px] font-medium uppercase tracking-wider mb-6" style={{ color: 'var(--color-ink-faint)' }}>Win Rate by Month</h3>
+            <div className="h-[240px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                  <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} />
+                <BarChart data={chartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                  <XAxis dataKey="name" stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
+                  <YAxis stroke="rgba(255,255,255,0.2)" fontSize={11} tickLine={false} axisLine={false} />
                   <RechartsTooltip 
-                    contentStyle={{ backgroundColor: 'rgba(9, 9, 11, 0.9)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                    itemStyle={{ color: '#fff' }}
+                    contentStyle={{ backgroundColor: '#111113', borderColor: 'rgba(255,255,255,0.06)', borderRadius: '8px', fontSize: '12px' }}
+                    itemStyle={{ color: '#f7f8f8' }}
                   />
-                  <Bar dataKey="wins" fill="#a78bfa" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="wins" fill="#5e6ad2" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
-
         </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

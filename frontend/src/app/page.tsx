@@ -90,7 +90,7 @@ interface FieldProps {
 function Field({ label, name, value, onChange, placeholder, multi, type = "text" }: FieldProps) {
   return (
     <div className="mb-4">
-      <label className="block text-xs font-medium text-zinc-400 mb-1.5 ml-1">{label}</label>
+      <label className="block text-xs font-medium mb-1.5 ml-0.5" style={{ color: 'var(--color-ink-muted)' }}>{label}</label>
       {multi ? (
         <textarea 
           name={name} value={value} onChange={onChange} placeholder={placeholder} 
@@ -301,22 +301,23 @@ export default function Home() {
             >
 
               {/* Upload Card */}
-              <div className="glass-panel rounded-xl p-6">
+              <div className="surface-card p-6">
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="w-6 h-6 rounded-md bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 flex items-center justify-center text-xs font-medium shadow-[0_0_10px_rgba(99,102,241,0.2)]">1</div>
-                  <h2 className="text-sm font-semibold text-white">Source Document</h2>
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(94,106,210,0.2)' }}>1</div>
+                  <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Source Document</h2>
                 </div>
                 
-                <div className={`relative border border-dashed rounded-lg p-6 text-center mb-5 transition-all group cursor-pointer ${uploadDone ? 'border-indigo-500/50 bg-indigo-500/10' : 'border-white/20 bg-black/20 hover:border-white/40 hover:bg-black/40'}`}>
+                <div className={`relative border border-dashed rounded-lg p-6 text-center mb-5 transition-all group cursor-pointer ${uploadDone ? '' : ''}`}
+                  style={{ borderColor: uploadDone ? 'var(--color-accent)' : 'var(--color-hairline-strong)', backgroundColor: uploadDone ? 'var(--color-accent-muted)' : 'var(--color-canvas)' }}>
                   {uploadDone ? (
-                    <CheckCircle2 className="w-8 h-8 mx-auto mb-3 text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
+                    <CheckCircle2 className="w-7 h-7 mx-auto mb-3" style={{ color: 'var(--color-accent)' }} />
                   ) : (
-                    <UploadCloud className="w-8 h-8 mx-auto mb-3 text-zinc-500 group-hover:text-white transition-colors" />
+                    <UploadCloud className="w-7 h-7 mx-auto mb-3 transition-colors" style={{ color: 'var(--color-ink-faint)' }} />
                   )}
-                  <div className="text-sm text-white font-medium mb-1">
+                  <div className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink)' }}>
                     {uploadDone ? 'Processed & Vectorized' : 'Upload RFP (PDF, DOCX)'}
                   </div>
-                  <label className="cursor-pointer text-xs font-medium text-indigo-300 hover:text-indigo-200 underline underline-offset-2">
+                  <label className="cursor-pointer text-xs font-medium underline underline-offset-2" style={{ color: 'var(--color-accent)' }}>
                     <input type="file" accept=".pdf,.docx,.txt" onChange={(e) => { setFile(e.target.files?.[0] || null); setUploadDone(false); }} className="hidden" />
                     {file ? file.name : 'Browse files'}
                   </label>
@@ -324,7 +325,7 @@ export default function Home() {
                 <button 
                   onClick={handleUpload} 
                   disabled={uploading || !file} 
-                  className="btn-primary w-full disabled:opacity-50"
+                  className="premium-btn btn-primary w-full disabled:opacity-50"
                 >
                   {uploading ? 'Processing...' : 'Upload File'}
                 </button>
@@ -335,27 +336,29 @@ export default function Home() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
-                className="glass-panel rounded-xl p-6"
+                className="surface-card p-6"
               >
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-md bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 flex items-center justify-center text-xs font-medium shadow-[0_0_10px_rgba(99,102,241,0.2)]">2</div>
-                    <h2 className="text-sm font-semibold text-white">Strategic Context</h2>
+                    <div className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-semibold" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(94,106,210,0.2)' }}>2</div>
+                    <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Strategic Context</h2>
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={applyAutofill} 
                       disabled={!extractedMeta || autofilling}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 ${
-                        extractedMeta 
-                          ? 'bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 hover:bg-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]' 
-                          : 'bg-white/5 text-zinc-500 cursor-not-allowed border border-white/5'
-                      } ${autofilling ? 'animate-pulse' : ''}`}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${autofilling ? 'animate-pulse' : ''}`}
+                      style={{
+                        backgroundColor: extractedMeta ? 'var(--color-accent-muted)' : 'var(--color-surface-2)',
+                        color: extractedMeta ? 'var(--color-accent)' : 'var(--color-ink-faint)',
+                        border: extractedMeta ? '1px solid rgba(94,106,210,0.2)' : '1px solid var(--color-hairline)',
+                        cursor: extractedMeta ? 'pointer' : 'not-allowed',
+                      }}
                     >
                       <Wand2 size={13} className={autofilling ? 'animate-spin' : ''} />
                       {autofilling ? 'Filling...' : 'AI Autofill'}
                     </button>
-                    <button onClick={clearForm} className="text-xs font-medium text-zinc-400 hover:text-white transition-colors">
+                    <button onClick={clearForm} className="text-xs font-medium transition-colors" style={{ color: 'var(--color-ink-faint)' }}>
                       Reset
                     </button>
                   </div>
@@ -367,7 +370,7 @@ export default function Home() {
                 </div>
                 <Field label="RFP Title" name="rfp_title" value={formData.rfp_title} onChange={handleChange} placeholder="Q3 Platform Migration" />
                 
-                <div className="my-5 border-t border-white/10"></div>
+                <div className="my-5" style={{ borderTop: '1px solid var(--color-hairline)' }}></div>
 
                 <div className="grid grid-cols-2 gap-x-4">
                   <Field label="Your Organization" name="org_name" value={formData.org_name} onChange={handleChange} placeholder="BidForge" />
@@ -393,7 +396,7 @@ export default function Home() {
                   <button
                     onClick={handleGenerate}
                     disabled={generating}
-                    className="premium-btn w-full btn-primary relative z-10 font-bold"
+                    className="premium-btn w-full btn-primary relative z-10 font-semibold"
                   >
                     {generating ? (
                       <>
@@ -419,14 +422,14 @@ export default function Home() {
               ref={outputRef} 
               className="lg:col-span-7 h-full sticky top-0 pb-6"
             >
-              <div className="glass-panel rounded-xl flex flex-col h-[calc(100vh-104px)] overflow-hidden">
+              <div className="surface-card flex flex-col h-[calc(100vh-104px)] overflow-hidden">
                 
                 {/* Toolbar */}
-                <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-black/40">
+                <div className="px-6 py-3.5 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-hairline)', backgroundColor: 'var(--color-surface-1)' }}>
                   <div className="flex items-center gap-3">
-                    <h2 className="text-sm font-semibold text-white">Document Output</h2>
+                    <h2 className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>Document Output</h2>
                     {proposalData && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 shadow-[0_0_8px_rgba(99,102,241,0.2)]">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(94,106,210,0.2)' }}>
                         {Math.round(proposalData.confidence_score * 100)}% Match
                       </span>
                     )}
@@ -439,7 +442,8 @@ export default function Home() {
                         navigator.clipboard.writeText(proposalData?.content || "");
                         toast.success("Copied to clipboard!");
                       }}
-                      className="p-2 border border-white/10 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors bg-white/5"
+                      className="p-2 rounded-lg disabled:opacity-30 transition-colors"
+                      style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-hairline)', color: 'var(--color-ink-muted)' }}
                       title="Copy Markdown"
                     >
                       <Copy size={16} />
@@ -450,7 +454,8 @@ export default function Home() {
                         const { generateDocx } = await import("@/lib/doc_generation");
                         generateDocx(renderMarkdown(proposalData!.content), `${formData.client_name}_Proposal.docx`, orgId || "");
                       }}
-                      className="flex items-center gap-2 px-3 py-1.5 border border-white/10 rounded-lg text-xs font-medium text-white hover:bg-white/5 disabled:opacity-30 transition-colors bg-white/5"
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-30 transition-colors"
+                      style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-hairline)', color: 'var(--color-ink)' }}
                     >
                       <Download size={14} /> DOCX
                     </button>
@@ -485,24 +490,24 @@ export default function Home() {
                       <div className="h-full flex flex-col items-center justify-center text-zinc-500 py-20">
                         {generating ? (
                           <>
-                            <Logo className="w-12 h-12 mb-6 animate-pulse-glow" />
-                            <p className="text-sm font-medium text-white mb-2 text-shadow-glow">Forging your proposal...</p>
-                            <p className="text-xs text-indigo-400 mb-4">{genElapsed}s elapsed</p>
-                            <div className="flex flex-col gap-2 text-xs text-zinc-500">
-                              <span className={genElapsed >= 0 ? 'text-indigo-300 font-medium drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]' : ''}>✦ Analyzing strategic context</span>
-                              <span className={genElapsed >= 3 ? 'text-indigo-300 font-medium drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]' : ''}>✦ Drafting executive summary</span>
-                              <span className={genElapsed >= 6 ? 'text-indigo-300 font-medium drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]' : ''}>✦ Building solution architecture</span>
-                              <span className={genElapsed >= 9 ? 'text-indigo-300 font-medium drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]' : ''}>✦ Generating pricing & timeline</span>
-                              <span className={genElapsed >= 12 ? 'text-indigo-300 font-medium drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]' : ''}>✦ Final quality review</span>
+                            <Logo className="w-10 h-10 mb-6 animate-pulse-glow" />
+                            <p className="text-sm font-medium mb-2" style={{ color: 'var(--color-ink)' }}>Forging your proposal…</p>
+                            <p className="text-xs mb-4" style={{ color: 'var(--color-accent)' }}>{genElapsed}s elapsed</p>
+                            <div className="flex flex-col gap-2 text-xs" style={{ color: 'var(--color-ink-faint)' }}>
+                              <span style={genElapsed >= 0 ? { color: 'var(--color-ink-muted)', fontWeight: 500 } : {}}>✦ Analyzing strategic context</span>
+                              <span style={genElapsed >= 3 ? { color: 'var(--color-ink-muted)', fontWeight: 500 } : {}}>✦ Drafting executive summary</span>
+                              <span style={genElapsed >= 6 ? { color: 'var(--color-ink-muted)', fontWeight: 500 } : {}}>✦ Building solution architecture</span>
+                              <span style={genElapsed >= 9 ? { color: 'var(--color-ink-muted)', fontWeight: 500 } : {}}>✦ Generating pricing & timeline</span>
+                              <span style={genElapsed >= 12 ? { color: 'var(--color-ink-muted)', fontWeight: 500 } : {}}>✦ Final quality review</span>
                             </div>
                           </>
                         ) : (
                           <>
-                            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-                              <Sparkles size={20} className="text-zinc-500" />
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-hairline)' }}>
+                              <Sparkles size={18} style={{ color: 'var(--color-ink-faint)' }} />
                             </div>
-                            <p className="text-sm text-white font-medium mb-1">No proposal generated</p>
-                            <p className="text-sm text-zinc-400 text-center max-w-[250px]">Upload an RFP and provide strategic context to generate a highly tailored proposal.</p>
+                            <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink)' }}>No proposal generated</p>
+                            <p className="text-sm text-center max-w-[260px]" style={{ color: 'var(--color-ink-faint)' }}>Upload an RFP and provide strategic context to generate a highly tailored proposal.</p>
                           </>
                         )}
                       </div>
