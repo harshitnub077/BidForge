@@ -22,7 +22,7 @@ class AILayer:
                     temperature=0.7,
                 )
                 response = self.client.models.generate_content(
-                    model="models/gemini-1.5-flash",
+                    model="gemini-2.5-flash",
                     contents=prompt,
                     config=config,
                 )
@@ -38,7 +38,7 @@ class AILayer:
             return [0.0] * 768
         try:
             result = self.client.models.embed_content(
-                model="text-embedding-004",
+                model="gemini-embedding-2",
                 contents=text,
             )
             return result.embeddings[0].values
@@ -71,11 +71,18 @@ Text to analyze:
                     response_mime_type="application/json",
                 )
                 response = self.client.models.generate_content(
-                    model="models/gemini-1.5-flash",
+                    model="gemini-2.5-flash",
                     contents=prompt,
                     config=config,
                 )
-                return json.loads(response.text)
+                text = response.text.strip()
+                if text.startswith("```json"):
+                    text = text[7:]
+                elif text.startswith("```"):
+                    text = text[3:]
+                if text.endswith("```"):
+                    text = text[:-3]
+                return json.loads(text.strip())
             except Exception as e:
                 if ("503" in str(e) or "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e)) and attempt < 2:
                     time.sleep(2 ** attempt)

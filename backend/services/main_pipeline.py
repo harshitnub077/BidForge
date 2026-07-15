@@ -46,7 +46,7 @@ async def get_llm_response(prompt: str, system: str, max_retries: int = 3) -> st
         try:
             response = await asyncio.to_thread(
                 client.models.generate_content,
-                model="models/gemini-1.5-flash",
+                model="gemini-2.5-flash",
                 contents=prompt,
                 config=config,
             )
@@ -70,7 +70,7 @@ async def get_llm_response_stream(prompt: str, system: str, max_retries: int = 3
     for attempt in range(max_retries):
         try:
             response_stream = await client.aio.models.generate_content_stream(
-                model="gemini-1.5-flash",
+                model="gemini-2.5-flash",
                 contents=prompt,
                 config=config,
             )
