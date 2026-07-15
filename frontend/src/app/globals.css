@@ -10,40 +10,40 @@
 @layer base {
   :root {
     --color-canvas: #ffffff;
-    --color-surface-1: rgba(0, 0, 0, 0.03);
-    --color-surface-2: rgba(0, 0, 0, 0.06);
-    --color-surface-3: rgba(0, 0, 0, 0.1);
+    --color-surface-1: #fafafa;
+    --color-surface-2: #eaeaea;
+    --color-surface-3: #e0e0e0;
     --color-ink: #000000;
-    --color-ink-muted: rgba(0, 0, 0, 0.6);
-    --color-ink-faint: rgba(0, 0, 0, 0.4);
-    --color-hairline: rgba(0, 0, 0, 0.08);
-    --color-hairline-strong: rgba(0, 0, 0, 0.15);
-    --color-accent: #000000;
-    --color-accent-muted: rgba(0, 0, 0, 0.05);
+    --color-ink-muted: #666666;
+    --color-ink-faint: #999999;
+    --color-hairline: #eaeaea;
+    --color-hairline-strong: #cccccc;
+    --color-accent: #0070f3;
+    --color-accent-muted: rgba(0, 112, 243, 0.1);
     
-    --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.8), inset 0 -1px 1px rgba(0, 0, 0, 0.02);
-    --glass-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 1), inset 0 -1px 1px rgba(0, 0, 0, 0.04);
+    --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --glass-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.08);
     --mesh-bg: none;
-    --glass-blur: blur(32px) saturate(200%);
+    --glass-blur: none;
   }
 
   :root[data-theme="dark"] {
     --color-canvas: #000000;
-    --color-surface-1: rgba(255, 255, 255, 0.05);
-    --color-surface-2: rgba(255, 255, 255, 0.1);
-    --color-surface-3: rgba(255, 255, 255, 0.15);
+    --color-surface-1: #0a0a0a;
+    --color-surface-2: #171717;
+    --color-surface-3: #222222;
     --color-ink: #ffffff;
-    --color-ink-muted: rgba(255, 255, 255, 0.65);
-    --color-ink-faint: rgba(255, 255, 255, 0.4);
-    --color-hairline: rgba(255, 255, 255, 0.1);
-    --color-hairline-strong: rgba(255, 255, 255, 0.2);
-    --color-accent: #ffffff;
-    --color-accent-muted: rgba(255, 255, 255, 0.1);
+    --color-ink-muted: #888888;
+    --color-ink-faint: #666666;
+    --color-hairline: #333333;
+    --color-hairline-strong: #444444;
+    --color-accent: #0070f3;
+    --color-accent-muted: rgba(0, 112, 243, 0.15);
     
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 1px rgba(255, 255, 255, 0.02);
-    --glass-shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px rgba(255, 255, 255, 0.04);
+    --glass-shadow: none;
+    --glass-shadow-hover: 0 0 0 1px #333;
     --mesh-bg: none;
-    --glass-blur: blur(32px) saturate(200%);
+    --glass-blur: none;
   }
   body {
     background-color: var(--color-canvas);
@@ -119,10 +119,8 @@
 .surface-card {
   background-color: var(--color-surface-1);
   border: 1px solid var(--color-hairline);
-  border-radius: 24px;
-  backdrop-filter: blur(32px) saturate(200%);
-  -webkit-backdrop-filter: blur(32px) saturate(200%);
   box-shadow: var(--glass-shadow);
+  border-radius: 8px;
 }
 .surface-card-hover {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -154,16 +152,13 @@
 /* ── Inputs ── */
 .premium-input {
   width: 100%;
-  background-color: var(--color-surface-1);
-  border: 1px solid var(--color-hairline);
-  border-radius: 12px;
+  background-color: var(--color-canvas);
+  border: 1px solid var(--color-hairline-strong);
+  border-radius: 6px;
   padding: 8px 12px;
   font-size: 0.875rem;
   color: var(--color-ink);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: var(--glass-shadow);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .premium-input::placeholder {
   color: var(--color-ink-faint);

@@ -205,8 +205,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
         
         {/* Topbar */}
-        <div className="px-6 pt-6 pb-0 shrink-0 z-10 w-full max-w-[1448px] mx-auto">
-          <header role="banner" className="h-14 flex items-center justify-between px-6 rounded-2xl surface-card">
+        <div className="shrink-0 z-10 w-full bg-[var(--color-canvas)] border-b border-[var(--color-hairline)]">
+          <header role="banner" className="h-14 flex items-center justify-between px-6 max-w-[1448px] mx-auto">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsCollapsed(!isCollapsed)} 
