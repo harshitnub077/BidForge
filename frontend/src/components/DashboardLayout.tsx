@@ -115,8 +115,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         style={{ 
           backgroundColor: 'var(--color-surface-1)', 
           borderColor: 'var(--color-hairline)',
-          backdropFilter: 'blur(24px) saturate(150%)',
-          WebkitBackdropFilter: 'blur(24px) saturate(150%)'
+          backdropFilter: 'var(--glass-blur)',
+          WebkitBackdropFilter: 'var(--glass-blur)'
         }}
       >
         <div className={`h-14 flex items-center ${isCollapsed ? 'justify-center' : 'px-5'} border-b shrink-0`} style={{ borderColor: 'var(--color-hairline)' }}>
@@ -191,7 +191,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               {isCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
             </button>
-            <div className="w-px h-4 bg-white/10" />
+            <div className="w-px h-4" style={{ backgroundColor: 'var(--color-hairline)' }} />
             <div className="flex items-center gap-2 text-[13px]">
               <span className="font-medium" style={{ color: 'var(--color-ink-muted)' }}>BidForge Workspace</span>
               <span style={{ color: 'var(--color-ink-faint)' }}>/</span>

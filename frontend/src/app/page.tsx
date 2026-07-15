@@ -418,9 +418,9 @@ export default function Home() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 relative">
+    <div className="w-full h-full">
           
-          <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch h-full pb-6">
 
             {/* ── LEFT PANEL (Form) ── */}
             <motion.div 
@@ -497,7 +497,7 @@ export default function Home() {
                   <Field label="Proposed Meeting Date" name="proposal_date" value={formData.proposal_date} onChange={handleChange} placeholder="July 21, 2026" type="date" />
                 </div>
 
-                <div className="my-5 border-t border-white/10"></div>
+                <div className="my-5" style={{ borderTop: '1px solid var(--color-hairline)' }}></div>
 
                 <Field label="Key Differentiators" name="differentiators" value={formData.differentiators} onChange={handleChange} placeholder="Proprietary engine, 24/7 support..." multi isAiFilling={autofilling} />
                 <Field label="Pain Points" name="pain_points" value={formData.pain_points} onChange={handleChange} placeholder="High latency, poor analytics..." multi isAiFilling={autofilling} />
@@ -547,9 +547,9 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
               ref={outputRef} 
-              className="lg:col-span-7 h-full sticky top-0 -mb-6"
+              className="lg:col-span-7 h-full"
             >
-              <div className="surface-card flex flex-col h-[calc(100vh-72px)] overflow-hidden rounded-b-none">
+              <div className="surface-card flex flex-col h-full overflow-hidden rounded-2xl">
                 
                 {/* Toolbar */}
                 <div className="px-6 py-3.5 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-hairline)' }}>
