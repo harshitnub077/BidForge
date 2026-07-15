@@ -226,31 +226,10 @@ function UploadDropzone({ onUpload, status, setStatus }: UploadDropzoneProps) {
 }
 
 // ── Sidebar Nav Item ─────────────────────────────────────────────────────────
-interface NavItemProps {
-  icon: React.ElementType;
-  label: string;
-  active?: boolean;
-}
-
-function NavItem({ icon: Icon, label, active = false }: NavItemProps) {
-  return (
-    <button      className={cn(
-        'w-full flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 transition-colors group cursor-pointer',
-        active ? 'bg-[var(--color-surface-2)] font-medium' : 'hover:bg-[var(--color-surface-1)]'
-      )}
-      style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-muted)' }}>
-      <Icon size={18} style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-faint)' }} />
-      {label}
-    </button>
-  );
-}
-
 export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
   const [orgId, setOrgId] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
 
-  const STORAGE_KEY = "bidforge_form_data";
   const DEFAULT_FORM = {
     client_name: "", industry: "", rfp_title: "", org_name: "BidForge",
     differentiators: "", case_studies: "", deal_size: "", pain_points: "", compliance_reqs: "",
@@ -258,7 +237,6 @@ export default function Home() {
   };
 
   const [formData, setFormData] = useState(DEFAULT_FORM);
-  const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [uploadDone, setUploadDone] = useState(false);
@@ -280,11 +258,6 @@ export default function Home() {
     if (error) console.error(error.message);
     else if (data) setOrgId(data.org_id);
   };
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -334,7 +307,6 @@ export default function Home() {
 
   const handleUpload = async (fileToUpload: File) => {
     if (!session) return;
-    setFile(fileToUpload);
     setUploading(true);
     const form = new FormData();
     form.append("file", fileToUpload);
@@ -595,8 +567,8 @@ export default function Home() {
                           const { generatePdf } = await import("@/lib/doc_generation");
                           await generatePdf("proposal-output", `${formData.client_name}_Proposal.pdf`, orgId || "");
                           toast.success("PDF generated!", { id: "pdf" });
-                        } catch (e) {
-                          toast.error("Failed to generate PDF.", { id: "pdf" });
+                        } catch {
+                          toast.error("Failed to download PDF.");
                         }
                       }}
                       className="flex items-center gap-2 px-3 py-1.5 btn-primary rounded-lg text-xs font-medium disabled:opacity-50 transition-all"

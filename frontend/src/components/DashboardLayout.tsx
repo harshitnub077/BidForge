@@ -171,7 +171,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 });
                 const data = await res.json();
                 if (data.url) window.location.href = data.url;
-              } catch (e) {
+              } catch {
                 toast.error("Failed to create checkout session");
               }
             }}
