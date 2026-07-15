@@ -420,7 +420,7 @@ export default function Home() {
   return (
     <div className="w-full h-full">
           
-          <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch h-full pb-6">
+          <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start h-full pb-6">
 
             {/* ── LEFT PANEL (Form) ── */}
             <motion.div 
@@ -547,7 +547,7 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
               ref={outputRef} 
-              className="lg:col-span-7 h-full"
+              className="lg:col-span-7 h-[calc(100vh-48px)] sticky top-6"
             >
               <div className="surface-card flex flex-col h-full overflow-hidden rounded-2xl">
                 
