@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Toaster, toast } from "sonner";
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -58,6 +60,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   
   const pathname = usePathname();
   const router = useRouter();
+
+  // Lenis Smooth Scroll Setup
+  useEffect(() => {
+    const wrapper = document.getElementById('scroll-wrapper');
+    const content = document.getElementById('scroll-content');
+    if (!wrapper || !content) return;
+
+    const lenis = new Lenis({
+      wrapper: wrapper,
+      content: content,
+      lerp: 0.08, // Adjust for how "buttery" the scroll is (lower is smoother)
+      wheelMultiplier: 1.2,
+      smoothWheel: true,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, [pathname]); // Re-init on page change if necessary, or just run once
 
   const fetchOrgId = async (userId: string) => {
     const { data, error } = await supabase.from('profiles').select('org_id').eq('id', userId).single();
@@ -223,8 +250,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Dynamic Content */}
-        <div className="flex-1 overflow-y-auto p-6 relative bg-transparent">
-          {children}
+        <div id="scroll-wrapper" className="flex-1 overflow-y-auto p-6 relative bg-transparent">
+          <div id="scroll-content">
+            {children}
+          </div>
         </div>
       </main>
 
