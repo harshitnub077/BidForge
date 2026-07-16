@@ -1,29 +1,19 @@
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-  <!-- Solid Black Background with Rounded Corners -->
-  <rect width="200" height="200" rx="40" fill="#000000"/>
+  <style>
+    .ink { fill: #000000; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #ffffff; }
+    }
+  </style>
+  <!-- Forward-pointing Arrow / Chevron (Dark/Light adaptive) -->
+  <path 
+    class="ink"
+    d="M40 30 L110 30 L180 100 L110 170 L40 170 L110 100 Z" 
+  />
   
-  <!-- Anvil Base -->
+  <!-- Interlocking Accent Triangle (Vercel Blue) -->
   <path 
-    d="M50 80 L30 80 Q20 80 25 95 L40 130 C45 145 60 150 80 150 L120 150 C140 150 155 145 160 130 L175 95 Q180 80 170 80 L150 80" 
-    stroke="#ffffff" 
-    stroke-width="12" 
-    stroke-linecap="round" 
-    stroke-linejoin="round" 
-    fill="transparent"
+    d="M40 30 L110 100 L40 170 Z" 
+    fill="#0070f3" 
   />
-  <!-- Anvil Top Plate -->
-  <path 
-    d="M20 70 L180 70" 
-    stroke="#ffffff" 
-    stroke-width="16" 
-    stroke-linecap="round" 
-  />
-
-  <!-- AI Spark -->
-  <g transform="translate(100, 35) scale(0.55)">
-    <path 
-      d="M0 -40 L10 -10 L40 0 L10 10 L0 40 L-10 10 L-40 0 L-10 -10 Z" 
-      fill="#0070f3"
-    />
-  </g>
 </svg>
