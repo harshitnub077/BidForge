@@ -9,9 +9,10 @@ import { useEffect } from 'react';
 
 interface TiptapEditorProps {
   content: string; // The HTML or Markdown content
+  onChange?: (html: string, text: string) => void;
 }
 
-export default function TiptapEditor({ content }: TiptapEditorProps) {
+export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -21,6 +22,9 @@ export default function TiptapEditor({ content }: TiptapEditorProps) {
       attributes: {
         class: 'prose prose-invert prose-p:text-sm prose-headings:font-medium focus:outline-none w-full max-w-none',
       },
+    },
+    onUpdate: ({ editor }) => {
+      onChange?.(editor.getHTML(), editor.getText());
     },
   });
 
@@ -55,23 +59,25 @@ export default function TiptapEditor({ content }: TiptapEditorProps) {
     <div className="relative w-full h-full">
       {editor && (
         <BubbleMenu editor={editor}>
-          <div className="flex items-center gap-1 bg-zinc-900 border border-white/10 shadow-2xl rounded-lg p-1">
+          <div className="flex items-center gap-1 shadow-2xl rounded-lg p-1 border" style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)' }}>
             <button
               onClick={() => simulateAiAction('Rewriting')}
-              className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 rounded-md text-xs font-medium text-zinc-300 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors hover:bg-[var(--color-surface-3)]"
+              style={{ color: 'var(--color-ink)' }}
             >
               <RefreshCw size={14} /> Rewrite
             </button>
             <button
               onClick={() => simulateAiAction('Making Professional')}
-              className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 rounded-md text-xs font-medium text-zinc-300 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors hover:bg-[var(--color-surface-3)]"
+              style={{ color: 'var(--color-ink)' }}
             >
               <Wand2 size={14} /> Make Professional
             </button>
-            <div className="w-px h-4 bg-white/10 mx-1" />
+            <div className="w-px h-4 mx-1" style={{ backgroundColor: 'var(--color-hairline-strong)' }} />
             <button
               onClick={() => simulateAiAction('Ask AI')}
-              className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 rounded-md text-xs font-medium transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-500"
             >
               <Sparkles size={14} /> Ask AI
             </button>

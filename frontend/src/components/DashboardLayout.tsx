@@ -227,14 +227,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 bg-[var(--color-surface-1)] border border-[var(--color-hairline)] rounded-md px-2.5 py-1.5 text-xs w-48 shadow-inner hover:border-[var(--color-hairline-strong)] transition-colors cursor-text" style={{ color: 'var(--color-ink-muted)' }}>
-              <Search size={14} style={{ color: 'var(--color-ink-faint)' }} />
-              <span>Search projects...</span>
-              <div className="ml-auto flex gap-1">
-                <kbd className="rounded px-1 py-0.5 text-[9px] font-sans border shadow-sm" style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)', color: 'var(--color-ink-faint)' }}>⌘</kbd>
-                <kbd className="rounded px-1 py-0.5 text-[9px] font-sans border shadow-sm" style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-hairline)', color: 'var(--color-ink-faint)' }}>K</kbd>
-              </div>
-            </div>
+
             
             <div className="flex items-center gap-2 mr-2">
               <span className="text-[11px] font-medium tracking-wide uppercase" style={{ color: 'var(--color-ink-faint)' }}>{isDark ? 'Dark Mode' : 'Light Mode'}</span>

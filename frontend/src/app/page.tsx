@@ -246,6 +246,8 @@ export default function Home() {
   const [proposalData, setProposalData] = useState<{
     content: string; confidence_score: number; requires_human_review: boolean;
   } | null>(null);
+  const [editedContentHtml, setEditedContentHtml] = useState<string | null>(null);
+  const [editedContentText, setEditedContentText] = useState<string | null>(null);
 
    
   const [extractedMeta, setExtractedMeta] = useState<Record<string, string> | null>(null);
@@ -278,6 +280,8 @@ export default function Home() {
   const clearForm = () => {
     setFormData(DEFAULT_FORM);
     setProposalData(null);
+    setEditedContentHtml(null);
+    setEditedContentText(null);
   };
 
   const applyAutofill = () => {
@@ -350,6 +354,10 @@ export default function Home() {
     try {
       const res = await fetch("http://localhost:8000/proposal/generate", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`
+        },
         body: JSON.stringify({ org_id: orgId || "pending", ...formData }),
       });
       if (!res.ok) {
@@ -498,8 +506,8 @@ export default function Home() {
 
                     {generating ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--color-ink-faint)' }} />
-                        <span style={{ color: 'var(--color-ink-muted)' }}>Synthesizing Proposal...</span>
+                        <Loader2 className="w-4 h-4 animate-spin text-white/80" />
+                        <span className="text-white font-medium">Synthesizing Proposal...</span>
                       </>
                     ) : (
                       <>
@@ -539,12 +547,12 @@ export default function Home() {
                     <button 
                       disabled={!proposalData}
                       onClick={() => {
-                        navigator.clipboard.writeText(proposalData?.content || "");
+                        navigator.clipboard.writeText(editedContentText || proposalData?.content || "");
                         toast.success("Copied to clipboard!");
                       }}
                       className="p-2 rounded-lg disabled:opacity-30 transition-colors"
                       style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-hairline)', color: 'var(--color-ink-muted)' }}
-                      title="Copy Markdown"
+                      title="Copy text"
                     >
                       <Copy size={16} />
                     </button>
@@ -552,7 +560,7 @@ export default function Home() {
                       disabled={!proposalData}
                       onClick={async () => {
                         const { generateDocx } = await import("@/lib/doc_generation");
-                        generateDocx(renderMarkdown(proposalData!.content), `${formData.client_name}_Proposal.docx`, orgId || "");
+                        generateDocx(editedContentHtml || renderMarkdown(proposalData!.content), `${formData.client_name}_Proposal.docx`, orgId || "");
                       }}
                       className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-30 transition-colors"
                       style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-hairline)', color: 'var(--color-ink)' }}
@@ -586,7 +594,13 @@ export default function Home() {
                   >
                     {proposalData ? (
                       <div className="animate-fade-in w-full h-full">
-                        <TiptapEditor content={renderMarkdown(proposalData.content)} />
+                        <TiptapEditor 
+                          content={renderMarkdown(proposalData.content)} 
+                          onChange={(html, text) => {
+                            setEditedContentHtml(html);
+                            setEditedContentText(text);
+                          }}
+                        />
                       </div>
                     ) : (
                       <div className="h-full flex flex-col items-center justify-center py-20" style={{ color: 'var(--color-ink-muted)' }}>

@@ -42,6 +42,7 @@ async def generate_proposal(
     # The user is already authenticated via Supabase get_user() in auth.py.
     # We do a best-effort DB check; if profile doesn't exist yet, we still allow
     # generation since the JWT auth already proves their identity.
+    db_client = None
     try:
         from supabase.client import ClientOptions
         db_client = create_client(
