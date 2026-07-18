@@ -94,15 +94,15 @@ function Field({ label, name, value, onChange, placeholder, multi, type = "text"
       variants={{ hidden: { opacity: 0, y: 5 }, show: { opacity: 1, y: 0 } }}
       className="flex flex-col gap-2 w-full relative z-10"
     >
-      <label htmlFor={name} className="text-[14px] font-medium ml-1" style={{ color: 'var(--color-ink-muted)' }}>
+      <label htmlFor={name} className="text-[13px] font-semibold ml-1 tracking-tight" style={{ color: 'var(--color-ink-muted)' }}>
         {label}
       </label>
-      <div className="relative">
+      <div className="relative group">
         {isAiFilling && (
           <motion.div
             layoutId={`ai-highlight-${name}`}
-            className="absolute inset-0 rounded-xl bg-indigo-500/20 z-0"
-            animate={{ opacity: [0.3, 0.8, 0.3] }}
+            className="absolute inset-0 rounded-xl bg-indigo-500/10 z-0"
+            animate={{ opacity: [0.2, 0.6, 0.2] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
         )}
@@ -110,13 +110,13 @@ function Field({ label, name, value, onChange, placeholder, multi, type = "text"
           <textarea
             id={name} name={name} value={value} onChange={onChange} placeholder={placeholder}
             className={cn(
-              "premium-input min-h-[140px] resize-y"
+              "premium-input min-h-[140px] resize-y transition-all group-hover:border-[var(--color-hairline-strong)]"
             )}
           />
         ) : (
           <input
             id={name} type={type} name={name} value={value} onChange={onChange} placeholder={placeholder}
-            className="premium-input"
+            className="premium-input transition-all group-hover:border-[var(--color-hairline-strong)]"
           />
         )}
       </div>
@@ -483,7 +483,7 @@ export default function Home() {
                   <Field label="Case Studies" name="case_studies" value={formData.case_studies} onChange={handleChange} placeholder="Migrated GlobalBank in 3 months..." multi isAiFilling={autofilling} />
                 </div>
                 
-                <div className="mt-6 relative">
+                <div className="mt-8 relative">
                   <motion.button
                     whileHover={{ scale: generating ? 1 : 1.01 }}
                     whileTap={{ scale: generating ? 1 : 0.98 }}
@@ -491,28 +491,25 @@ export default function Home() {
                     disabled={generating}
                     aria-busy={generating}
                     className={`
-                      relative w-full overflow-hidden rounded-xl px-4 py-3 font-semibold text-sm
+                      relative w-full overflow-hidden rounded-xl px-4 py-3.5 font-semibold text-sm
                       transition-all duration-300 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2
-                      ${generating ? 'bg-[var(--color-surface-1)] cursor-not-allowed' : 'btn-primary shadow-sm'}
+                      ${generating ? 'bg-[var(--color-surface-1)] cursor-not-allowed border border-[var(--color-hairline)]' : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 border border-indigo-500/30'}
+                      group
                     `}
                   >
-                    {generating && (
-                      <motion.div
-                        className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-black/10 to-transparent"
-                        animate={{ x: ["-100%", "200%"] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                      />
+                    {!generating && (
+                      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shimmer" />
                     )}
 
                     {generating ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin text-white/80" />
-                        <span className="text-white font-medium">Synthesizing Proposal...</span>
+                        <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--color-ink-faint)' }} />
+                        <span style={{ color: 'var(--color-ink-muted)' }}>Synthesizing Proposal...</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4 text-white transition-transform group-hover:rotate-12" />
-                        <span className="text-white">Generate Proposal</span>
+                        <Sparkles className="w-4 h-4 text-indigo-100 transition-transform group-hover:rotate-12" />
+                        <span>Generate Proposal</span>
                       </>
                     )}
                   </motion.button>
@@ -619,11 +616,12 @@ export default function Home() {
                           </>
                         ) : (
                           <>
-                            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-hairline)' }}>
-                              <Sparkles size={18} style={{ color: 'var(--color-ink-faint)' }} />
+                            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 relative overflow-hidden group" style={{ backgroundColor: 'var(--color-surface-1)', border: '1px solid var(--color-hairline)', boxShadow: 'var(--glass-shadow)' }}>
+                              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                              <Sparkles size={24} className="transition-transform duration-500 group-hover:scale-110 group-hover:text-indigo-400" style={{ color: 'var(--color-ink-muted)' }} />
                             </div>
-                            <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink)' }}>No proposal generated</p>
-                            <p className="text-sm text-center max-w-[260px]" style={{ color: 'var(--color-ink-faint)' }}>Upload an RFP and provide strategic context to generate a highly tailored proposal.</p>
+                            <p className="text-base font-semibold mb-2 tracking-tight" style={{ color: 'var(--color-ink)' }}>No proposal generated yet</p>
+                            <p className="text-sm text-center max-w-[280px] leading-relaxed" style={{ color: 'var(--color-ink-faint)' }}>Upload an RFP document and provide the strategic context to forge a highly tailored, winning proposal.</p>
                           </>
                         )}
                       </div>

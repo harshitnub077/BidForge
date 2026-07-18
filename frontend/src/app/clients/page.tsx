@@ -83,12 +83,13 @@ export default function ClientsPage() {
           ))}
         </div>
       ) : clients.length === 0 ? (
-        <div className="text-center py-20 surface-card" style={{ borderStyle: 'dashed' }}>
-          <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
-            style={{ backgroundColor: 'var(--color-accent-muted)', border: '1px solid rgba(255,255,255,0.15)' }}>
-            <Building2 className="w-7 h-7" style={{ color: 'var(--color-accent)' }} />
+        <div className="text-center py-24 surface-card relative overflow-hidden" style={{ borderStyle: 'dashed' }}>
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 relative overflow-hidden group"
+            style={{ backgroundColor: 'var(--color-surface-1)', border: '1px solid var(--color-hairline)', boxShadow: 'var(--glass-shadow)' }}>
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Building2 className="w-7 h-7 transition-transform duration-500 group-hover:scale-110 group-hover:text-indigo-400" style={{ color: 'var(--color-ink-muted)' }} />
           </div>
-          <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink)' }}>No Clients Found</p>
+          <p className="text-base font-semibold mb-1 tracking-tight" style={{ color: 'var(--color-ink)' }}>No Clients Found</p>
           <p className="text-sm" style={{ color: 'var(--color-ink-faint)' }}>Your clients will appear here after generating proposals.</p>
         </div>
       ) : (
@@ -99,20 +100,21 @@ export default function ClientsPage() {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
         >
           {clients.map((c, i) => (
-            <motion.div variants={itemVariants} key={i} className="surface-card surface-card-hover p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center text-base font-semibold"
-                  style={{ backgroundColor: 'var(--color-surface-3)', color: 'var(--color-ink)', border: '1px solid var(--color-hairline)' }}>
+            <motion.div variants={itemVariants} key={i} className="surface-card p-6 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 hover:border-[var(--color-hairline-strong)]" style={{ boxShadow: 'var(--glass-shadow)' }}>
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="flex items-start justify-between mb-4 relative z-10">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-semibold shadow-sm transition-transform group-hover:scale-105"
+                  style={{ backgroundColor: 'var(--color-surface-2)', color: 'var(--color-ink)', border: '1px solid var(--color-hairline)' }}>
                   {c.name.charAt(0).toUpperCase()}
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider"
-                  style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid rgba(255,255,255,0.15)' }}>
+                <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider"
+                  style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
                   Active
                 </span>
               </div>
-              <h3 className="font-semibold text-base mb-1" style={{ color: 'var(--color-ink)', letterSpacing: '-0.01em' }}>{c.name}</h3>
-              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-ink-muted)' }}>
-                <Briefcase size={13} />
+              <h3 className="font-semibold text-lg mb-1.5 relative z-10 tracking-tight" style={{ color: 'var(--color-ink)' }}>{c.name}</h3>
+              <div className="flex items-center gap-2 text-sm relative z-10 transition-colors group-hover:text-[var(--color-ink-muted)]" style={{ color: 'var(--color-ink-faint)' }}>
+                <Briefcase size={14} />
                 {c.proposals_count} Proposal{c.proposals_count !== 1 ? 's' : ''} Generated
               </div>
             </motion.div>

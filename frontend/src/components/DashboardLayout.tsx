@@ -8,7 +8,7 @@ import { GlassToggle } from "@/components/ui/GlassToggle";
 import { Session } from "@supabase/supabase-js";
 import { usePathname, useRouter } from "next/navigation";
 import { 
-  LayoutDashboard, FolderKanban, Users, BarChart3, Settings, Sparkles, PanelLeftClose, PanelLeftOpen, Search
+  LayoutDashboard, FolderKanban, Users, BarChart3, Settings, Sparkles, PanelLeftClose, PanelLeftOpen
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Toaster, toast } from "sonner";
@@ -26,17 +26,21 @@ function NavItem({ icon: Icon, label, active = false, onClick, isCollapsed = fal
   return (
     <button 
       onClick={onClick}
-      className={`w-full flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2 rounded-lg text-[13px] font-medium transition-all duration-150`}
+      className={`w-full flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2 rounded-lg text-[13px] font-medium transition-all duration-200 relative overflow-hidden group`}
       style={{
         backgroundColor: active ? 'var(--color-surface-2)' : 'transparent',
         color: active ? 'var(--color-ink)' : 'var(--color-ink-muted)',
         border: active ? '1px solid var(--color-hairline)' : '1px solid transparent',
+        boxShadow: active ? '0 1px 2px rgba(0,0,0,0.02)' : 'none'
       }}
       title={isCollapsed ? label : undefined}
       onMouseEnter={(e) => { if (!active) { e.currentTarget.style.backgroundColor = 'var(--color-surface-2)'; e.currentTarget.style.color = 'var(--color-ink)'; } }}
       onMouseLeave={(e) => { if (!active) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--color-ink-muted)'; } }}
     >
-      <Icon size={16} style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-faint)' }} className="shrink-0" />
+      {active && (
+         <motion.div layoutId="nav-active" className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-indigo-500 rounded-r-full" />
+      )}
+      <Icon size={16} style={{ color: active ? 'var(--color-ink)' : 'var(--color-ink-faint)' }} className={`shrink-0 ${active ? '' : 'group-hover:scale-110'} transition-transform`} />
       {!isCollapsed && <span className="truncate">{label}</span>}
     </button>
   );
@@ -176,16 +180,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               }
             }}
             title={isCollapsed ? "Upgrade to Pro" : undefined}
-            className={`w-full mt-3 py-2 ${isCollapsed ? 'px-0 justify-center' : 'px-3 justify-center gap-2'} rounded-lg text-xs font-semibold transition-all flex items-center`}
+            className={`w-full mt-3 py-2 ${isCollapsed ? 'px-0 justify-center' : 'px-3 justify-center gap-2'} rounded-lg text-xs font-semibold transition-all flex items-center relative overflow-hidden group`}
             style={{
-              backgroundColor: 'var(--color-accent-muted)',
+              backgroundColor: 'var(--color-surface-1)',
               color: '#a5b4fc',
-              border: '1px solid rgba(94,106,210,0.2)',
+              border: '1px solid rgba(94,106,210,0.3)',
+              boxShadow: '0 0 10px rgba(94,106,210,0.05)'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(94,106,210,0.25)'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-accent-muted)'}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(94,106,210,0.1)';
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(94,106,210,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--color-surface-1)';
+              e.currentTarget.style.boxShadow = '0 0 10px rgba(94,106,210,0.05)';
+            }}
           >
-            <Sparkles size={13} className="shrink-0" /> {!isCollapsed && "Upgrade"}
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:animate-shimmer" />
+            <Sparkles size={13} className="shrink-0 transition-transform group-hover:rotate-12" /> {!isCollapsed && "Upgrade to Pro"}
           </button>
 
           <button 

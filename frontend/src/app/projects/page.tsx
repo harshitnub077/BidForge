@@ -100,24 +100,25 @@ export default function ProjectsPage() {
           ))}
         </div>
       ) : proposals.length === 0 ? (
-        <div className="text-center py-20 surface-card" style={{ borderStyle: 'dashed' }}>
-          <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
-            style={{ backgroundColor: 'var(--color-accent-muted)', border: '1px solid rgba(255,255,255,0.15)' }}>
-            <Sparkles className="w-7 h-7" style={{ color: 'var(--color-accent)' }} />
+        <div className="text-center py-24 surface-card relative overflow-hidden" style={{ borderStyle: 'dashed' }}>
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 relative overflow-hidden group"
+            style={{ backgroundColor: 'var(--color-surface-1)', border: '1px solid var(--color-hairline)', boxShadow: 'var(--glass-shadow)' }}>
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Sparkles className="w-7 h-7 transition-transform duration-500 group-hover:scale-110 group-hover:text-indigo-400" style={{ color: 'var(--color-ink-muted)' }} />
           </div>
-          <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-ink)' }}>No Projects Found</p>
+          <p className="text-base font-semibold mb-1 tracking-tight" style={{ color: 'var(--color-ink)' }}>No Projects Found</p>
           <p className="text-sm" style={{ color: 'var(--color-ink-faint)' }}>Generate your first proposal to see it here.</p>
         </div>
       ) : (
         <div className="surface-card overflow-hidden">
           <table className="w-full text-left text-sm" style={{ color: 'var(--color-ink-muted)' }}>
             <thead style={{ backgroundColor: 'var(--color-surface-2)', borderBottom: '1px solid var(--color-hairline)' }}>
-              <tr className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
-                <th className="px-6 py-3.5">RFP Title</th>
-                <th className="px-6 py-3.5">Client</th>
-                <th className="px-6 py-3.5">Status</th>
-                <th className="px-6 py-3.5">Generated Date</th>
-                <th className="px-6 py-3.5 text-right">Action</th>
+              <tr className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
+                <th className="px-6 py-4">RFP Title</th>
+                <th className="px-6 py-4">Client</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Generated Date</th>
+                <th className="px-6 py-4 text-right">Action</th>
               </tr>
             </thead>
             <motion.tbody 
@@ -127,25 +128,27 @@ export default function ProjectsPage() {
             >
               {proposals.map((p) => (
                 <motion.tr variants={itemVariants} key={p.id}
-                  className="transition-colors"
+                  className="transition-colors group cursor-default"
                   style={{ borderBottom: '1px solid var(--color-hairline)' }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-surface-2)'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
-                  <td className="px-6 py-3.5 font-medium flex items-center gap-2" style={{ color: 'var(--color-ink)' }}>
-                    <FileText size={14} style={{ color: 'var(--color-accent)' }} />
+                  <td className="px-6 py-4 font-medium flex items-center gap-3 transition-colors group-hover:text-[var(--color-ink)]" style={{ color: 'var(--color-ink)' }}>
+                    <div className="w-8 h-8 rounded-md flex items-center justify-center" style={{ backgroundColor: 'var(--color-surface-3)' }}>
+                      <FileText size={14} style={{ color: 'var(--color-ink-muted)' }} />
+                    </div>
                     {p.rfp_source || "Untitled"}
                   </td>
-                  <td className="px-6 py-3.5">{p.content_json?.client_name || "Unknown"}</td>
-                  <td className="px-6 py-3.5">
+                  <td className="px-6 py-4 transition-colors group-hover:text-[var(--color-ink)]">{p.content_json?.client_name || "Unknown"}</td>
+                  <td className="px-6 py-4">
                     <select
                       value={p.status}
                       onChange={(e) => updateStatus(p.id, e.target.value)}
-                      className="px-2 py-1 rounded-md text-[11px] font-medium capitalize outline-none cursor-pointer"
+                      className="px-2.5 py-1.5 rounded-md text-[11px] font-semibold capitalize outline-none cursor-pointer transition-colors"
                       style={{ 
-                        backgroundColor: p.status === 'won' ? 'rgba(0, 112, 243, 0.15)' : 'var(--color-surface-2)', 
-                        color: p.status === 'won' ? '#0070f3' : 'var(--color-ink)', 
-                        border: '1px solid var(--color-hairline)' 
+                        backgroundColor: p.status === 'won' ? 'rgba(16, 185, 129, 0.1)' : p.status === 'lost' ? 'rgba(244, 63, 94, 0.1)' : 'var(--color-surface-2)', 
+                        color: p.status === 'won' ? '#10b981' : p.status === 'lost' ? '#f43f5e' : 'var(--color-ink-muted)', 
+                        border: p.status === 'won' ? '1px solid rgba(16, 185, 129, 0.2)' : p.status === 'lost' ? '1px solid rgba(244, 63, 94, 0.2)' : '1px solid var(--color-hairline)' 
                       }}
                     >
                       <option value="draft">Draft</option>
@@ -154,16 +157,18 @@ export default function ProjectsPage() {
                       <option value="lost">Lost</option>
                     </select>
                   </td>
-                  <td className="px-6 py-3.5 flex items-center gap-2">
-                    <Calendar size={13} style={{ color: 'var(--color-ink-faint)' }} />
-                    {new Date(p.generated_at).toLocaleDateString()}
+                  <td className="px-6 py-4 transition-colors group-hover:text-[var(--color-ink)]">
+                    <div className="flex items-center gap-2">
+                       <Calendar size={13} style={{ color: 'var(--color-ink-faint)' }} />
+                       {new Date(p.generated_at).toLocaleDateString()}
+                    </div>
                   </td>
-                  <td className="px-6 py-3.5 text-right">
+                  <td className="px-6 py-4 text-right">
                     <button 
                       onClick={() => alert(`View Proposal ID: ${p.id} \n\nContent: ${p.content_json?.client_name}`)}
-                      className="p-1 transition-colors" style={{ color: 'var(--color-ink-faint)' }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-ink)'}
-                      onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-ink-faint)'}>
+                      className="p-1.5 rounded-md transition-colors" style={{ color: 'var(--color-ink-faint)' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-ink)'; e.currentTarget.style.backgroundColor = 'var(--color-surface-3)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-ink-faint)'; e.currentTarget.style.backgroundColor = 'transparent'; }}>
                       <ChevronRight size={16} />
                     </button>
                   </td>
