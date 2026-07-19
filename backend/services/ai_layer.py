@@ -29,7 +29,10 @@ class AILayer:
                 return response.text
             except Exception as e:
                 if ("503" in str(e) or "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e)) and attempt < 2:
-                    time.sleep(2 ** attempt)
+                    import re
+                    match = re.search(r'retry in (\d+\.?\d*)s', str(e))
+                    delay = float(match.group(1)) + 1 if match else 15
+                    time.sleep(delay)
                     continue
                 return f"Error during AI generation: {str(e)}"
 
@@ -37,9 +40,11 @@ class AILayer:
         if not self.client:
             return [0.0] * 768
         try:
+            config = types.EmbedContentConfig(output_dimensionality=768)
             result = self.client.models.embed_content(
                 model="gemini-embedding-2",
                 contents=text,
+                config=config,
             )
             return result.embeddings[0].values
         except Exception as e:
@@ -85,7 +90,10 @@ Text to analyze:
                 return json.loads(text.strip())
             except Exception as e:
                 if ("503" in str(e) or "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e)) and attempt < 2:
-                    time.sleep(2 ** attempt)
+                    import re
+                    match = re.search(r'retry in (\d+\.?\d*)s', str(e))
+                    delay = float(match.group(1)) + 1 if match else 15
+                    time.sleep(delay)
                     continue
                 print(f"Extraction error: {e}")
                 return {}

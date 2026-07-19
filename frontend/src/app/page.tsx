@@ -325,8 +325,13 @@ export default function Home() {
         setUploadDone(true);
         const data = await res.json();
         if (data.extracted_metadata) {
-          setExtractedMeta(data.extracted_metadata);
-          toast.success("RFP Processed & Vectorized Successfully!");
+          if (Object.keys(data.extracted_metadata).length > 0) {
+            setExtractedMeta(data.extracted_metadata);
+            toast.success("RFP Processed & Vectorized Successfully!");
+          } else {
+            toast.warning("AI extraction failed (likely rate limit). Please wait 15 seconds and re-upload.");
+            setExtractedMeta(null);
+          }
         }
       }
       else { const d = await res.json(); toast.error("Upload failed: " + JSON.stringify(d)); setUploadDone(false); }
