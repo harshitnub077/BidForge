@@ -22,7 +22,7 @@ class AILayer:
                     temperature=0.7,
                 )
                 response = self.client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model="gemini-2.0-flash",
                     contents=prompt,
                     config=config,
                 )
@@ -76,7 +76,7 @@ Text to analyze:
                     response_mime_type="application/json",
                 )
                 response = self.client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model="gemini-2.0-flash",
                     contents=prompt,
                     config=config,
                 )
