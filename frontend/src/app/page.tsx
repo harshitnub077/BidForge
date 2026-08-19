@@ -637,6 +637,21 @@ export default function Home() {
                   />
                 </div>
 
+                {/* Compliance Requirements */}
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-300 mb-1.5">
+                    Compliance & Security Requirements
+                  </label>
+                  <textarea 
+                    name="compliance_reqs" 
+                    value={formData.compliance_reqs} 
+                    onChange={handleChange} 
+                    placeholder="e.g. SOC 2 Type II, ISO 27001, HIPAA compliant data processing..." 
+                    rows={2} 
+                    className="premium-input" 
+                  />
+                </div>
+
                 {/* Case Studies */}
                 <div>
                   <label className="block text-[11px] font-medium text-zinc-300 mb-1.5">
