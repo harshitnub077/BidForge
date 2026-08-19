@@ -28,13 +28,12 @@ class AILayer:
                 )
                 return response.text
             except Exception as e:
-                if ("503" in str(e) or "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e)) and attempt < 2:
-                    import re
-                    match = re.search(r'retry in (\d+\.?\d*)s', str(e))
-                    delay = float(match.group(1)) + 1 if match else 15
-                    time.sleep(delay)
+                if ("503" in str(e)) and attempt < 2:
+                    import time
+                    time.sleep(5)
                     continue
-                return f"Error during AI generation: {str(e)}"
+                # Fail fast on quota exhaustion
+                return f"Error during AI generation (Quota Exhausted): {str(e)}"
 
     def generate_embedding(self, text: str) -> list[float]:
         if not self.client:
@@ -89,12 +88,10 @@ Text to analyze:
                     text = text[:-3]
                 return json.loads(text.strip())
             except Exception as e:
-                if ("503" in str(e) or "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e)) and attempt < 2:
-                    import re
-                    match = re.search(r'retry in (\d+\.?\d*)s', str(e))
-                    delay = float(match.group(1)) + 1 if match else 15
-                    time.sleep(delay)
-                    continue
+                # If we hit a 429 quota limit, do NOT sleep and hang the upload. Just fail fast.
+                if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+                    print(f"Extraction error (Quota Exhausted). Failing fast to prevent upload hang.")
+                    return {}
                 print(f"Extraction error: {e}")
                 return {}
 
