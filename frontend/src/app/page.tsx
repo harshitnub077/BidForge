@@ -335,7 +335,9 @@ export default function Home() {
           toast.info("RFP uploaded successfully");
         }
       } else {
-        toast.error("Document upload failed.");
+        const errorText = await res.text();
+        console.error("Upload failed:", res.status, errorText);
+        toast.error(`Document upload failed: ${errorText}`);
         setUploadDone(false);
       }
     } catch {

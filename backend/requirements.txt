@@ -12,5 +12,7 @@ sentry-sdk==2.6.0
 python-dotenv==1.0.1
 slowapi==0.1.9
 markitdown
+pdfminer.six
+pdfplumber
 weasyprint
 markdown2
