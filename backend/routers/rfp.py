@@ -62,22 +62,28 @@ async def upload_rfp(
         content = await file.read()
         extracted_text = ""
         
-        if file.filename.endswith('.pdf'):
-            pdf_reader = PyPDF2.PdfReader(io.BytesIO(content))
-            for page in pdf_reader.pages:
-                text = page.extract_text()
-                if text:
-                    extracted_text += text + "\n"
-                    
-        elif file.filename.endswith('.docx'):
-            doc = docx.Document(io.BytesIO(content))
-            for para in doc.paragraphs:
-                extracted_text += para.text + "\n"
+        if file.filename.endswith(('.pdf', '.docx', '.xlsx', '.pptx')):
+            import tempfile
+            import os
+            from markitdown import MarkItDown
+            
+            md = MarkItDown()
+            suffix = f".{file.filename.split('.')[-1]}"
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+                temp_file.write(content)
+                temp_path = temp_file.name
                 
+            try:
+                result = md.convert(temp_path)
+                extracted_text = result.text_content
+            finally:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+                    
         elif file.filename.endswith('.txt'):
             extracted_text = content.decode('utf-8')
             
-        if not extracted_text.strip():
+        if not extracted_text or not extracted_text.strip():
             raise HTTPException(status_code=400, detail="Could not extract text from file (may be scanned image).")
             
     except Exception as e:
