@@ -157,6 +157,21 @@ Output a strictly formatted JSON object (no markdown formatting around it) with 
         print(f"Red team critique failed: {e}")
         return '{"win_probability_score": 85, "missing_gaps": ["None identified"], "red_team_advice": "Proceed with standard pitch."}'
 
+async def generate_market_intelligence(industry: str) -> str:
+    """Agentic Market Intelligence: Finds competitor weaknesses in the target industry using Google Search."""
+    prompt = f"""You are an elite Market Intelligence Analyst.
+Use Google Search to find the common weaknesses, failures, or complaints regarding the top legacy vendors and service providers in the '{industry}' industry.
+
+Based on your real-time findings, output a 'Competitor Ghosting Strategy' in 2-3 sentences.
+This strategy should subtly highlight how to position our solution against these specific competitor weaknesses without naming the competitors directly.
+"""
+    system = "You are a ruthless Market Intelligence Analyst. Output only the short Ghosting Strategy."
+    try:
+        return await get_llm_response(prompt, system, tools=[{"google_search": {}}])
+    except Exception as e:
+        print(f"Market intelligence failed: {e}")
+        return "Emphasize our modern cloud-native architecture, rapid deployment speed, and transparent pricing to counter legacy vendor lock-in and slow implementation."
+
 
 # ── Core: Generate COMPLETE proposal with Advanced Anti-Gravity Rules ─────────
 async def generate_complete_proposal_stream(
@@ -269,6 +284,8 @@ ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
         context=context
     )
     
+    market_intel = await generate_market_intelligence(industry=industry)
+
     import json
     try:
         red_team_data = json.loads(red_team_json.replace('```json', '').replace('```', '').strip())
@@ -290,6 +307,9 @@ ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
 YOUR STRATEGY PROFILE FOR THIS PROPOSAL (Execute on this):
 {strategy_profile}
 
+COMPETITOR GHOSTING STRATEGY (Weave this into the narrative):
+{market_intel}
+
 RED TEAM CRITIQUE (Fix these gaps to win):
 - Win Probability Score: {red_team_data.get('win_probability_score', 85)}/100
 - Advice: {red_team_data.get('red_team_advice', '')}
@@ -304,6 +324,12 @@ Return a complete, send-ready proposal with these sections:
 
 ## Our Proposed Solution
 (Architecture, approach, and methodology. Be specific, not generic. INCLUDE A `mermaid` GRAPH TD DIAGRAM OF THE ARCHITECTURE.)
+
+## Compliance Traceability Matrix
+(Analyze the {pain_points} and {compliance_reqs}. Extract the top 5 strictest requirements and map them to our solution in a Markdown table with columns: 'Requirement', 'Our Capability', 'Status (Fully Compliant)'.)
+
+## Proposed Project Team
+(Describe the team structure. MUST INCLUDE a `mermaid` GRAPH TD DIAGRAM showing the Project Org Chart, followed by a 'Key Personnel Skills Matrix' table.)
 
 ## Implementation Timeline & Methodology
 (Use a markdown table with phases, milestones, and deliverables. INCLUDE A `mermaid` GANTT CHART OF THE TIMELINE.)
