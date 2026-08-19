@@ -442,16 +442,6 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-2.5">
-          {extractedMeta && (
-            <button 
-              onClick={applyAutofill} 
-              disabled={autofilling}
-              className="px-3 py-1.5 rounded-md bg-[#18181b] hover:bg-[#222226] border border-[#27272a] text-zinc-200 font-medium text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer"
-            >
-              <Wand2 size={13} className={autofilling ? "animate-spin" : ""} />
-              <span>{autofilling ? "Applying..." : "Auto-Fill Matrix"}</span>
-            </button>
-          )}
           <button 
             onClick={clearForm}
             className="px-2.5 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-[#18181b] border border-transparent hover:border-[#27272a] transition-colors text-xs inline-flex items-center gap-1.5 cursor-pointer"
@@ -502,7 +492,19 @@ export default function Home() {
                   Tailor the core pillars of your executive response
                 </p>
               </div>
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Step 02</span>
+              <div className="flex items-center gap-4">
+                {extractedMeta && (
+                  <button 
+                    onClick={applyAutofill} 
+                    disabled={autofilling}
+                    className="px-3 py-1.5 rounded-md bg-[#18181b] hover:bg-[#222226] border border-[#27272a] text-zinc-200 font-medium text-[11px] transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  >
+                    <Wand2 size={12} className={autofilling ? "animate-spin text-[#d4d4d8]" : "text-[#a1a1aa]"} />
+                    <span>{autofilling ? "Applying..." : "Auto-Fill Matrix"}</span>
+                  </button>
+                )}
+                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Step 02</span>
+              </div>
             </div>
 
             {/* Well-Spaced Form Sections */}
