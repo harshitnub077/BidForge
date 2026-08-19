@@ -753,13 +753,41 @@ export default function Home() {
                 <button 
                   disabled={!proposalData}
                   onClick={async () => {
-                    toast.loading("Compiling PDF...", { id: "pdf-export" });
+                    toast.loading("Rendering enterprise PDF...", { id: "pdf-export" });
                     try {
-                      const { generatePdf } = await import("@/lib/doc_generation");
-                      await generatePdf("proposal-output-render", `${formData.client_name || "Executive"}_Proposal.pdf`, orgId || "");
-                      toast.success("PDF Exported", { id: "pdf-export" });
+                      const token = (await (await import("@/lib/supabase")).supabase.auth.getSession()).data.session?.access_token;
+                      const res = await fetch("http://localhost:8000/export/pdf", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          "Authorization": `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({
+                          markdown_content: proposalData?.content || "",
+                          client_name: formData.client_name || "Client",
+                          rfp_title: formData.rfp_title || "Proposal",
+                          org_name: formData.org_name || "BidForge",
+                          proposal_date: formData.proposal_date || "",
+                        }),
+                      });
+                      if (!res.ok) throw new Error("Backend PDF rendering failed");
+                      const blob = await res.blob();
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `${formData.client_name || "Executive"}_Proposal.pdf`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      toast.success("Enterprise PDF Exported", { id: "pdf-export" });
                     } catch {
-                      toast.error("Failed to generate PDF.", { id: "pdf-export" });
+                      // Fallback to client-side html2pdf.js if backend fails
+                      try {
+                        const { generatePdf } = await import("@/lib/doc_generation");
+                        await generatePdf("proposal-output-render", `${formData.client_name || "Executive"}_Proposal.pdf`, orgId || "");
+                        toast.success("PDF Exported (client fallback)", { id: "pdf-export" });
+                      } catch {
+                        toast.error("Failed to generate PDF.", { id: "pdf-export" });
+                      }
                     }
                   }}
                   className="px-3 py-1.5 rounded-md bg-white text-zinc-950 font-bold text-xs hover:bg-zinc-200 transition-colors inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-30"

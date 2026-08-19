@@ -368,29 +368,115 @@ CRITICAL RULES:
 > **Red Team Analysis:** {red_team_data.get('red_team_advice', '')}
 )"""
 
+    # ── SELF-REFINE REFLECTION LOOP ──────────────────────────────────────────
+    # Based on the "Self-Refine" research paper (Madaan et al., 2023).
+    # The Writer generates a draft. The Critic scores it. If score < 92,
+    # the Writer rewrites the weak sections. Max 3 iterations.
+    # ────────────────────────────────────────────────────────────────────────
+
+    MAX_REFINE_ITERATIONS = 2  # After initial draft, refine up to 2 more times
+    WIN_THRESHOLD = 92
+
+    async def _critic_score_draft(draft: str) -> dict:
+        """Have the Critic agent evaluate a draft and return structured feedback."""
+        critic_prompt = f"""You are a brutal Proposal Quality Critic. Score this proposal draft.
+
+CLIENT: {client_name}
+RFP TITLE: {rfp_title}
+THEIR PAIN POINTS: {pain_points}
+COMPLIANCE REQUIREMENTS: {compliance_reqs}
+
+DRAFT PROPOSAL:
+{draft[:12000]}
+
+Evaluate the draft on these criteria:
+1. Does it address ALL stated pain points specifically? (not generically)
+2. Does it contain concrete numbers, timelines, and named methodologies?
+3. Does it have proper tables (pricing + timeline)?
+4. Does it contain Mermaid diagrams?
+5. Are there any placeholder texts like [Your Name] or [Insert Date]?
+6. Does it mirror the client's language?
+7. Is the tone authoritative yet empathetic?
+
+Output ONLY a raw JSON object (no markdown):
+{{
+  "score": <number 0-100>,
+  "weak_sections": ["section name 1", "section name 2"],
+  "feedback": "2-3 sentences of specific, actionable rewrite instructions for the weak sections only."
+}}"""
+        try:
+            raw = await get_llm_response(critic_prompt, "You are a ruthless Proposal Quality Critic. Output ONLY raw valid JSON.")
+            return json.loads(raw.replace('```json', '').replace('```', '').strip())
+        except Exception as e:
+            print(f"Critic scoring failed: {e}")
+            return {"score": 95, "weak_sections": [], "feedback": "No issues found."}
+
+    async def _refine_draft(draft: str, feedback: dict) -> str:
+        """Have the Writer rewrite only the weak sections based on Critic feedback."""
+        refine_prompt = f"""You are rewriting specific sections of a proposal draft based on quality feedback.
+
+ORIGINAL DRAFT:
+{draft}
+
+CRITIC FEEDBACK (score: {feedback.get('score', 0)}/100):
+Weak sections: {', '.join(feedback.get('weak_sections', []))}
+Instructions: {feedback.get('feedback', '')}
+
+RULES:
+- Rewrite ONLY the weak sections mentioned above. Keep everything else identical.
+- Make the weak sections more specific, more quantified, and more compelling.
+- Ensure tables and Mermaid diagrams are preserved.
+- Output the COMPLETE revised proposal (not just the changed sections).
+- NO placeholder text — use real contact info from the original draft."""
+        try:
+            return await get_llm_response(refine_prompt, system_prompt)
+        except Exception:
+            return draft  # If refinement fails, return original
+
     try:
-        full_content = ""
-        async for chunk in get_llm_response_stream(prompt, system_prompt):
-            full_content += chunk
+        # Phase 1: Generate the initial full draft (non-streaming for Self-Refine)
+        print(f"[Self-Refine] Generating initial draft for {client_name}...")
+        initial_draft = await get_llm_response(prompt, system_prompt)
+
+        # Phase 2: Critic evaluates the draft
+        best_draft = initial_draft
+        for iteration in range(MAX_REFINE_ITERATIONS):
+            critic_result = await _critic_score_draft(best_draft)
+            score = critic_result.get("score", 95)
+            print(f"[Self-Refine] Iteration {iteration + 1}: Critic score = {score}/100")
+
+            if score >= WIN_THRESHOLD:
+                print(f"[Self-Refine] Score {score} >= {WIN_THRESHOLD}. Draft approved!")
+                break
+
+            # Score too low — refine
+            print(f"[Self-Refine] Score {score} < {WIN_THRESHOLD}. Refining weak sections: {critic_result.get('weak_sections', [])}")
+            best_draft = await _refine_draft(best_draft, critic_result)
+
+        # Phase 3: Stream the final polished draft to the user
+        # We stream it character-by-character in chunks to maintain the streaming UX
+        chunk_size = 80
+        for i in range(0, len(best_draft), chunk_size):
+            chunk = best_draft[i:i + chunk_size]
             yield chunk
-            
+            await asyncio.sleep(0.01)  # Small delay for smooth streaming UX
+
         # Save to Supabase History after streaming completes
         if supabase_client and user_id:
             try:
-                # Save the proposal
                 await asyncio.to_thread(
                     lambda: supabase_client.table("proposals").insert({
                         "org_id": org_id,
                         "user_id": user_id,
                         "rfp_source": rfp_title,
                         "status": "draft",
-                        "content_json": {"markdown": full_content, "client_name": client_name}
+                        "content_json": {"markdown": best_draft, "client_name": client_name}
                     }).execute()
                 )
             except Exception as e:
                 print(f"Failed to save proposal history: {e}")
-                
+
     except Exception as e:
-        print(f"Error during streaming generation: {e}")
+        print(f"Error during Self-Refine generation: {e}")
         yield f"\n\n**Error during generation**: {e}"
 

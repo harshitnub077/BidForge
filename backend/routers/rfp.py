@@ -6,9 +6,6 @@ from services.main_pipeline import sanitize_rfp_input
 from supabase import create_client
 from core.config import settings
 import uuid
-import io
-import PyPDF2
-import docx
 
 router = APIRouter(prefix="/rfp", tags=["RFP"])
 
