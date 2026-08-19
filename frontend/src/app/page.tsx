@@ -392,7 +392,16 @@ export default function Home() {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          content += decoder.decode(value, { stream: true });
+          
+          const chunkText = decoder.decode(value, { stream: true });
+          
+          if (chunkText.includes("<CLEAR>")) {
+             const parts = chunkText.split("<CLEAR>");
+             content = parts[parts.length - 1]; // Keep only what comes after CLEAR
+          } else {
+             content += chunkText;
+          }
+          
           setProposalData({ content, confidence_score: finalScore, requires_human_review: false });
         }
       }

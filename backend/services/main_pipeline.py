@@ -269,14 +269,24 @@ ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
         contact_details += f"- Proposed Meeting Date: {proposal_date}\n"
 
     # 1.5 Agentic Reflection Pass (Strategist, Market Intel & Critic)
-    # Run all independent multi-agent analyses concurrently to slash waiting time!
+    yield "> 🧠 **Agentic Reflection:** Analyzing RFP requirements and historical context...\n\n"
+    await asyncio.sleep(0.1)
+
     strategy_task = generate_strategy_profile(
         client_name=client_name,
         rfp_title=rfp_title,
         pain_points=pain_points,
         context=context
     )
+    
+    yield "> 🔎 **Agentic Market Intel:** Conducting real-time competitor intelligence via Google Search Grounding...\n\n"
+    await asyncio.sleep(0.1)
+    
     market_intel_task = generate_market_intelligence(industry=industry)
+    
+    yield "> ⚖️ **Agentic Red Team:** Running critical evaluation of our win probability...\n\n"
+    await asyncio.sleep(0.1)
+    
     red_team_task = generate_red_team_critique(
         client_name=client_name,
         rfp_title=rfp_title,
@@ -435,25 +445,36 @@ RULES:
 
     try:
         # Phase 1: Generate the initial full draft (non-streaming for Self-Refine)
+        yield "> ✍️ **Drafting:** Synthesizing initial state-of-the-art proposal draft...\n\n"
+        await asyncio.sleep(0.1)
         print(f"[Self-Refine] Generating initial draft for {client_name}...")
         initial_draft = await get_llm_response(prompt, system_prompt)
 
         # Phase 2: Critic evaluates the draft
         best_draft = initial_draft
         for iteration in range(MAX_REFINE_ITERATIONS):
+            yield f"> ⚖️ **Self-Refine Iteration {iteration + 1}:** Critic is evaluating the draft...\n\n"
+            await asyncio.sleep(0.1)
             critic_result = await _critic_score_draft(best_draft)
             score = critic_result.get("score", 95)
             print(f"[Self-Refine] Iteration {iteration + 1}: Critic score = {score}/100")
 
             if score >= WIN_THRESHOLD:
+                yield f"> ✅ **Draft Approved:** Score {score}/100 >= {WIN_THRESHOLD}. Finalizing proposal...\n\n"
+                await asyncio.sleep(0.1)
                 print(f"[Self-Refine] Score {score} >= {WIN_THRESHOLD}. Draft approved!")
                 break
 
             # Score too low — refine
+            yield f"> 🔄 **Refining:** Score {score}/100. AI Writer is rewriting weak sections: {', '.join(critic_result.get('weak_sections', []))}...\n\n"
+            await asyncio.sleep(0.1)
             print(f"[Self-Refine] Score {score} < {WIN_THRESHOLD}. Refining weak sections: {critic_result.get('weak_sections', [])}")
             best_draft = await _refine_draft(best_draft, critic_result)
 
         # Phase 3: Stream the final polished draft to the user
+        yield "<CLEAR>"
+        await asyncio.sleep(0.1)
+        
         # We stream it character-by-character in chunks to maintain the streaming UX
         chunk_size = 80
         for i in range(0, len(best_draft), chunk_size):
