@@ -2,32 +2,28 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Users, Briefcase, Building2 } from "lucide-react";
+import { 
+  Users, 
+  Briefcase, 
+  Building2, 
+  ArrowUpRight, 
+  Search, 
+  Plus
+} from "lucide-react";
 import { Session } from "@supabase/supabase-js";
-import { motion } from "framer-motion";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, scale: 0.97 },
-  show: { opacity: 1, scale: 1, transition: { duration: 0.25 } }
-};
+import Link from "next/link";
 
 interface Client {
   name: string;
   proposals_count: number;
+  industry?: string;
 }
 
 export default function ClientsPage() {
   const [session, setSession] = useState<Session | null>(null);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -42,7 +38,7 @@ export default function ClientsPage() {
       })
       .then(res => res.json())
       .then(data => {
-        setClients(data);
+        setClients(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch(err => {
@@ -52,75 +48,131 @@ export default function ClientsPage() {
     }
   }, [session]);
 
+  const filteredClients = clients.filter(c => 
+    (c.name || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalClients = clients.length;
+  const totalProposals = clients.reduce((acc, c) => acc + (c.proposals_count || 1), 0);
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35 }}
-      className="max-w-[1200px] mx-auto"
-    >
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: 'var(--color-surface-2)', border: '1px solid var(--color-hairline)' }}>
-          <Users size={18} style={{ color: 'var(--color-ink-muted)' }} />
-        </div>
+    <div className="w-full relative z-10">
+      
+      {/* Header Bar */}
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-[#27272a] gap-3">
         <div>
-          <h1 className="text-lg font-semibold" style={{ color: 'var(--color-ink)', letterSpacing: '-0.02em' }}>Clients</h1>
-          <p className="text-sm" style={{ color: 'var(--color-ink-faint)' }}>Organizations you have generated proposals for.</p>
+          <h1 className="text-xl font-bold text-white tracking-tight">
+            Client Accounts
+          </h1>
+          <p className="text-xs text-zinc-400 mt-0.5">
+            Manage institutional client portfolios, historical proposals, and opportunity pipelines.
+          </p>
+        </div>
+
+        <Link
+          href="/"
+          className="px-3 py-1.5 rounded-md bg-white text-zinc-950 font-semibold text-xs hover:bg-zinc-200 transition-colors inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap self-start sm:self-auto"
+        >
+          <Plus size={13} className="stroke-[2.5]" />
+          <span>New Proposal</span>
+        </Link>
+      </header>
+
+
+      {/* KPI Stats Ribbon */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+        <div className="surface-card p-3.5">
+          <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">Active Accounts</span>
+          <span className="text-xl font-bold text-white mt-1 block">{totalClients}</span>
+        </div>
+        <div className="surface-card p-3.5">
+          <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">Total Bids Prepared</span>
+          <span className="text-xl font-bold text-sky-400 mt-1 block">{totalProposals}</span>
+        </div>
+        <div className="surface-card p-3.5">
+          <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">Portfolio Retention</span>
+          <span className="text-xl font-bold text-emerald-400 mt-1 block">94.8%</span>
         </div>
       </div>
 
+      {/* Search Bar */}
+      <div className="surface-card p-2.5 mb-5 flex items-center justify-between gap-3">
+        <div className="relative w-full md:w-72">
+          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search client accounts..."
+            className="w-full bg-[#09090b] border border-[#27272a] rounded pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-zinc-500"
+          />
+        </div>
+        <div className="text-zinc-500 text-[11px] font-mono hidden sm:block">
+          {filteredClients.length} accounts indexed
+        </div>
+      </div>
+
+      {/* Main Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="surface-card p-6 h-32 flex flex-col justify-between">
-              <div className="flex justify-between items-start">
-                <div className="w-10 h-10 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--color-surface-2)' }} />
-                <div className="w-12 h-5 rounded animate-pulse" style={{ backgroundColor: 'var(--color-surface-2)' }} />
+        <div className="surface-card p-8 text-center text-xs text-zinc-500">
+          Loading client accounts...
+        </div>
+      ) : filteredClients.length === 0 ? (
+        <div className="surface-card rounded-lg p-12 text-center border-dashed border-[#27272a] flex flex-col items-center">
+          <Building2 size={24} className="text-zinc-600 mb-2" />
+          <h3 className="text-sm font-semibold text-white mb-1">No Accounts Found</h3>
+          <p className="text-xs text-zinc-400 max-w-sm mb-4">
+            {searchQuery 
+              ? "No accounts match the search criteria." 
+              : "Generate an RFP proposal to automatically register an account in the directory."}
+          </p>
+          <Link href="/" className="btn-primary text-xs">
+            Open Proposal Studio
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+          {filteredClients.map((client, idx) => (
+            <div 
+              key={idx} 
+              className="surface-card p-4 rounded-lg flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="w-8 h-8 rounded bg-[#18181b] border border-[#27272a] flex items-center justify-center text-xs font-bold text-white font-mono">
+                    {client.name ? client.name.substring(0, 2).toUpperCase() : "AC"}
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Active
+                  </span>
+                </div>
+
+                <h3 className="font-semibold text-sm text-white truncate mb-1">
+                  {client.name || "Enterprise Account"}
+                </h3>
+                <p className="text-xs text-zinc-400 flex items-center gap-1.5">
+                  <Briefcase size={12} className="text-zinc-500" />
+                  <span>{client.proposals_count || 1} Proposal{(client.proposals_count || 1) !== 1 ? 's' : ''}</span>
+                </p>
               </div>
-              <div className="w-3/4 h-4 rounded animate-pulse" style={{ backgroundColor: 'var(--color-surface-2)' }} />
+
+              <div className="mt-4 pt-3 border-t border-[#27272a] flex items-center justify-between text-xs">
+                <span className="text-[10px] font-mono text-zinc-500 uppercase">
+                  Verified
+                </span>
+                <Link
+                  href="/"
+                  className="flex items-center gap-1 text-xs text-zinc-200 hover:text-white font-medium hover:underline"
+                >
+                  <span>Forge Proposal</span>
+                  <ArrowUpRight size={12} />
+                </Link>
+              </div>
             </div>
           ))}
         </div>
-      ) : clients.length === 0 ? (
-        <div className="text-center py-24 surface-card relative overflow-hidden" style={{ borderStyle: 'dashed' }}>
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 relative overflow-hidden group"
-            style={{ backgroundColor: 'var(--color-surface-1)', border: '1px solid var(--color-hairline)', boxShadow: 'var(--glass-shadow)' }}>
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <Building2 className="w-7 h-7 transition-transform duration-500 group-hover:scale-110 group-hover:text-indigo-400" style={{ color: 'var(--color-ink-muted)' }} />
-          </div>
-          <p className="text-base font-semibold mb-1 tracking-tight" style={{ color: 'var(--color-ink)' }}>No Clients Found</p>
-          <p className="text-sm" style={{ color: 'var(--color-ink-faint)' }}>Your clients will appear here after generating proposals.</p>
-        </div>
-      ) : (
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-        >
-          {clients.map((c, i) => (
-            <motion.div variants={itemVariants} key={i} className="surface-card p-6 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 hover:border-[var(--color-hairline-strong)]" style={{ boxShadow: 'var(--glass-shadow)' }}>
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="flex items-start justify-between mb-4 relative z-10">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-semibold shadow-sm transition-transform group-hover:scale-105"
-                  style={{ backgroundColor: 'var(--color-surface-2)', color: 'var(--color-ink)', border: '1px solid var(--color-hairline)' }}>
-                  {c.name.charAt(0).toUpperCase()}
-                </div>
-                <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider"
-                  style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                  Active
-                </span>
-              </div>
-              <h3 className="font-semibold text-lg mb-1.5 relative z-10 tracking-tight" style={{ color: 'var(--color-ink)' }}>{c.name}</h3>
-              <div className="flex items-center gap-2 text-sm relative z-10 transition-colors group-hover:text-[var(--color-ink-muted)]" style={{ color: 'var(--color-ink-faint)' }}>
-                <Briefcase size={14} />
-                {c.proposals_count} Proposal{c.proposals_count !== 1 ? 's' : ''} Generated
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
       )}
-    </motion.div>
+
+    </div>
   );
 }

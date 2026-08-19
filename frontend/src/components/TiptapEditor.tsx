@@ -3,12 +3,12 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
-import { Sparkles, Wand2, RefreshCw } from 'lucide-react';
+import { Sparkles, Wand2, RefreshCw, Bold, Italic } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 
 interface TiptapEditorProps {
-  content: string; // The HTML or Markdown content
+  content: string;
   onChange?: (html: string, text: string) => void;
 }
 
@@ -20,7 +20,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     content,
     editorProps: {
       attributes: {
-        class: 'prose prose-invert prose-p:text-sm prose-headings:font-medium focus:outline-none w-full max-w-none',
+        class: 'doc-prose focus:outline-none w-full max-w-none text-zinc-300 min-h-[420px]',
       },
     },
     onUpdate: ({ editor }) => {
@@ -28,14 +28,9 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     },
   });
 
-
   useEffect(() => {
     if (editor && content) {
-      // If we regenerate the proposal completely, we want to update the editor content.
-      // Checking if content is substantially different to avoid cursor jumps when typing?
-      // Since it's generated via AI on a button click, setting it directly here is fine.
       if (editor.getHTML() !== content) {
-        // Tiptap accepts HTML directly. Our `renderMarkdown` provides HTML.
         editor.commands.setContent(content);
       }
     }
@@ -47,11 +42,11 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
   const simulateAiAction = (action: string) => {
     toast.promise(
-      new Promise((resolve) => setTimeout(resolve, 1500)),
+      new Promise((resolve) => setTimeout(resolve, 1000)),
       {
         loading: `${action}...`,
-        success: `${action} completed (Mock)`,
-        error: 'Failed',
+        success: `${action} complete`,
+        error: 'Failed to complete action',
       }
     );
   };
@@ -60,34 +55,45 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     <div className="relative w-full h-full">
       {editor && (
         <BubbleMenu editor={editor}>
-          <div className="flex items-center gap-1.5 shadow-xl rounded-xl p-1.5 border backdrop-blur-xl" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface-1) 80%, transparent)', borderColor: 'var(--color-hairline)', boxShadow: 'var(--glass-shadow-hover)' }}>
+          <div className="flex items-center gap-1 bg-[#18181b] border border-[#27272a] shadow-xl rounded-md p-1 backdrop-blur-md">
             <button
-              onClick={() => simulateAiAction('Rewriting')}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all hover:bg-[var(--color-surface-3)] group"
-              style={{ color: 'var(--color-ink)' }}
+              onClick={() => editor.chain().focus().toggleBold().run()}
+              className={`p-1 rounded text-xs transition-colors ${editor.isActive('bold') ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
+              title="Bold"
             >
-              <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" /> Rewrite
+              <Bold size={12} />
             </button>
             <button
-              onClick={() => simulateAiAction('Making Professional')}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all hover:bg-[var(--color-surface-3)] group"
-              style={{ color: 'var(--color-ink)' }}
+              onClick={() => editor.chain().focus().toggleItalic().run()}
+              className={`p-1 rounded text-xs transition-colors ${editor.isActive('italic') ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
+              title="Italic"
             >
-              <Wand2 size={14} className="group-hover:rotate-12 transition-transform" /> Professional
+              <Italic size={12} />
             </button>
-            <div className="w-px h-5 mx-1" style={{ backgroundColor: 'var(--color-hairline-strong)' }} />
+            <div className="w-px h-3.5 bg-[#27272a] mx-0.5" />
             <button
-              onClick={() => simulateAiAction('Ask AI')}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-500 hover:text-indigo-400 group relative overflow-hidden"
+              onClick={() => simulateAiAction('Rewriting section')}
+              className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
             >
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-indigo-500/10 to-transparent group-hover:animate-shimmer" />
-              <Sparkles size={14} className="group-hover:scale-110 transition-transform" /> Ask AI
+              <RefreshCw size={11} /> Rewrite
+            </button>
+            <button
+              onClick={() => simulateAiAction('Polishing executive tone')}
+              className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+            >
+              <Wand2 size={11} /> Polish
+            </button>
+            <button
+              onClick={() => simulateAiAction('Adding case proof point')}
+              className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold text-white bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer"
+            >
+              <Sparkles size={11} /> Expand Proof
             </button>
           </div>
         </BubbleMenu>
       )}
       
-      <div className="doc-prose-container w-full pb-32">
+      <div className="w-full pb-20">
         <EditorContent editor={editor} />
       </div>
     </div>

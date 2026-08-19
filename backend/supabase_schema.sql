@@ -53,7 +53,7 @@ create table rfp_questions (
   id uuid primary key default gen_random_uuid(),
   proposal_id uuid references proposals(id) on delete cascade,
   question_text text,
-  ai_answer text,
+  ai_answer text,  
   human_edited_answer text,
   confidence_score float check (confidence_score between 0 and 1)
 );

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BidForge AI Proposal Lab</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Space Grotesk & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-lowest": "#0e0e0e",
+                      "primary-fixed-dim": "#d0bcff",
+                      "surface": "#131313",
+                      "primary": "#d0bcff",
+                      "primary-fixed": "#e9ddff",
+                      "on-primary": "#3c0091",
+                      "surface-bright": "#3a3939",
+                      "primary-container": "#a078ff",
+                      "surface-dim": "#131313",
+                      "surface-container": "#201f1f",
+                      "on-tertiary-fixed": "#3d0026",
+                      "on-tertiary": "#620040",
+                      "on-secondary-fixed-variant": "#004c6e",
+                      "surface-container-high": "#2a2a2a",
+                      "secondary-fixed-dim": "#89ceff",
+                      "surface-variant": "#353534",
+                      "surface-container-highest": "#353534",
+                      "tertiary": "#ffafd3",
+                      "secondary-fixed": "#c9e6ff",
+                      "inverse-on-surface": "#313030",
+                      "error-container": "#93000a",
+                      "outline-variant": "#494454",
+                      "tertiary-container": "#e364a7",
+                      "tertiary-fixed": "#ffd8e7",
+                      "on-secondary-fixed": "#001e2f",
+                      "on-primary-fixed": "#23005c",
+                      "on-surface": "#e5e2e1",
+                      "surface-container-low": "#1c1b1b",
+                      "inverse-primary": "#6d3bd7",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-fixed-dim": "#ffafd3",
+                      "secondary": "#89ceff",
+                      "on-primary-fixed-variant": "#5516be",
+                      "outline": "#958ea0",
+                      "on-primary-container": "#340080",
+                      "on-background": "#e5e2e1",
+                      "on-secondary": "#00344d",
+                      "on-error": "#690005",
+                      "on-surface-variant": "#cbc3d7",
+                      "on-tertiary-container": "#560038",
+                      "secondary-container": "#00a2e6",
+                      "inverse-surface": "#e5e2e1",
+                      "surface-tint": "#d0bcff",
+                      "error": "#ffb4ab",
+                      "on-secondary-container": "#00344e",
+                      "on-tertiary-fixed-variant": "#85145a",
+                      "background": "#131313"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "margin-desktop": "64px",
+                      "xs": "4px",
+                      "lg": "48px",
+                      "margin-mobile": "16px",
+                      "xl": "80px",
+                      "base": "8px",
+                      "md": "24px",
+                      "sm": "12px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Space Grotesk"
+                      ],
+                      "headline-lg-mobile": [
+                              "Space Grotesk"
+                      ],
+                      "headline-md": [
+                              "Space Grotesk"
+                      ],
+                      "headline-sm": [
+                              "Space Grotesk"
+                      ],
+                      "display-lg": [
+                              "Space Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-sm": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "64px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        /* Custom Styles for Glow and Animations */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-card-premium {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 0 30px rgba(208, 188, 255, 0.2);
+        }
+
+        .glow-border {
+            border: 1px solid rgba(208, 188, 255, 0.4);
+            box-shadow: 0 0 20px rgba(208, 188, 255, 0.15) inset, 0 0 20px rgba(208, 188, 255, 0.15);
+        }
+
+        /* Pulse Animation for AI Generating State */
+        @keyframes pulse-violet {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-violet {
+            animation: pulse-violet 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Shimmer effect for code lines */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        .shimmer-line {
+            background: linear-gradient(to right, rgba(255,255,255,0.05) 4%, rgba(208, 188, 255, 0.2) 25%, rgba(255,255,255,0.05) 36%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite linear;
+        }
+        
+        /* Custom Scrollbar for editor */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex h-screen overflow-hidden antialiased">
+<!-- SideNavBar (Shared Component) -->
+<nav class="hidden md:flex flex-col h-full py-md z-50 bg-surface-container-lowest/40 backdrop-blur-2xl border-r border-white/5 shadow-2xl shadow-primary/5 h-screen w-64 fixed left-0 top-0">
+<!-- Header -->
+<div class="px-6 pb-8 border-b border-white/5 mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A macro, ultra-high resolution abstract 3D render of a glowing, intricate crystalline structure floating in a dark void. The structure emits a soft electric violet light, representing advanced AI architecture. The background is pure obsidian black. Minimalist, premium, tech-focused aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9lEs3DGLYnHWBZjRNU5v-ueDW8xWSKJsWu4hkb3aqU1rXLkSsV24lCFhOciHc5B9FhJl-L3wC0rKVfMrtb_k81h8b35eV2wDiS5t61bg0D1xqv1YiPGGdvuZ7B6-bnmCKAoN4OqA7nuP1dIoNtrcOmr6FKtXstctK4vinMe61DCTRY1mABiAQby-BIlHYmHtWs5azdVvjaeGU0YtpScmLOsDyVqT0QRx9d2NLsP7nHPWMDoKejnEeXakcfzUFfRBLSl_2iFLVv3e5"/>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-primary-fixed-dim tracking-tight">BidForge AI</h1>
+<p class="font-label-md text-label-md text-on-surface-variant opacity-70">Precision Powered</p>
+</div>
+</div>
+<button class="mt-6 w-full rounded-lg bg-gradient-to-r from-primary-container to-secondary-container py-3 px-4 flex items-center justify-center gap-2 text-white font-body-sm text-body-sm font-medium hover:opacity-90 transition-opacity glow-hover">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 18px;">add</span>
+                New Proposal
+            </button>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto px-2 space-y-1">
+<a class="text-on-surface-variant flex items-center px-4 py-3 hover:bg-white/5 transition-colors hover:text-primary transition-all duration-300 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined mr-3" style="font-size: 20px;">home</span>
+                Home
+            </a>
+<a class="bg-primary/10 text-primary border-r-2 border-primary-container flex items-center px-4 py-3 rounded-r-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined mr-3" style="font-size: 20px;">description</span>
+                Proposals
+            </a>
+<a class="text-on-surface-variant flex items-center px-4 py-3 hover:bg-white/5 transition-colors hover:text-primary transition-all duration-300 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined mr-3" style="font-size: 20px;">insights</span>
+                Analytics
+            </a>
+<a class="text-on-surface-variant flex items-center px-4 py-3 hover:bg-white/5 transition-colors hover:text-primary transition-all duration-300 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined mr-3" style="font-size: 20px;">group</span>
+                Team
+            </a>
+<a class="text-on-surface-variant flex items-center px-4 py-3 hover:bg-white/5 transition-colors hover:text-primary transition-all duration-300 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined mr-3" style="font-size: 20px;">help_outline</span>
+                Help
+            </a>
+</div>
+<!-- Footer Links -->
+<div class="mt-auto px-2 pt-4 border-t border-white/5">
+<a class="text-on-surface-variant flex items-center px-4 py-3 hover:bg-white/5 transition-colors hover:text-primary transition-all duration-300 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined mr-3" style="font-size: 20px;">logout</span>
+                Sign Out
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 relative bg-gradient-to-b from-surface-container-lowest to-surface overflow-y-auto">
+<!-- Ambient Background Glow -->
+<div class="absolute top-0 left-1/4 w-[800px] h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="px-margin-mobile md:px-margin-desktop py-lg max-w-7xl mx-auto space-y-md relative z-10">
+<!-- Page Header -->
+<header class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Proposal Lab</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Configure parameters and generate high-precision RFP responses.</p>
+</header>
+<!-- Dropzone Hero Section -->
+<section class="glass-card-premium rounded-xl p-8 md:p-12 text-center border-dashed glow-border relative overflow-hidden group cursor-pointer transition-all duration-300">
+<!-- Subtle background mesh pattern -->
+<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#d0bcff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<div class="relative z-10 flex flex-col items-center justify-center space-y-4">
+<div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-primary" style="font-size: 32px; font-variation-settings: 'wght' 300;">cloud_upload</span>
+</div>
+<h3 class="font-headline-md text-headline-sm md:text-headline-md text-on-surface">Drop RFP here to begin AI analysis</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto">Supports PDF, DOCX, and TXT files up to 50MB. Our engine will automatically parse requirements and context.</p>
+<button class="mt-4 px-6 py-2 rounded-full border border-white/20 text-on-surface font-body-sm text-body-sm hover:bg-white/5 transition-colors">
+                        Browse Files
+                    </button>
+</div>
+</section>
+<!-- Split Panel View -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Panel: Parameters -->
+<section class="lg:col-span-4 glass-card rounded-xl p-6 flex flex-col h-full space-y-6">
+<div class="flex items-center justify-between border-b border-white/5 pb-4">
+<h4 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim" style="font-size: 20px;">tune</span>
+                            Configuration
+                        </h4>
+</div>
+<!-- Sliders & Toggles -->
+<div class="space-y-6 flex-1">
+<!-- Tone -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant">Tone Profile</label>
+<span class="font-body-sm text-body-sm text-primary">Authoritative</span>
+</div>
+<input class="w-full h-1 bg-surface-container-high rounded-full appearance-none [&amp;::-webkit-slider-thumb]:appearance-none [&amp;::-webkit-slider-thumb]:w-3 [&amp;::-webkit-slider-thumb]:h-3 [&amp;::-webkit-slider-thumb]:rounded-full [&amp;::-webkit-slider-thumb]:bg-primary" max="100" min="1" type="range" value="75"/>
+<div class="flex justify-between font-label-md text-[10px] text-on-surface-variant opacity-50">
+<span>Conversational</span>
+<span>Formal</span>
+</div>
+</div>
+<!-- Technical Depth -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant">Technical Depth</label>
+<span class="font-body-sm text-body-sm text-primary">High</span>
+</div>
+<input class="w-full h-1 bg-surface-container-high rounded-full appearance-none [&amp;::-webkit-slider-thumb]:appearance-none [&amp;::-webkit-slider-thumb]:w-3 [&amp;::-webkit-slider-thumb]:h-3 [&amp;::-webkit-slider-thumb]:rounded-full [&amp;::-webkit-slider-thumb]:bg-primary" max="100" min="1" type="range" value="80"/>
+<div class="flex justify-between font-label-md text-[10px] text-on-surface-variant opacity-50">
+<span>Executive Summary</span>
+<span>Engineering Deep-Dive</span>
+</div>
+</div>
+<!-- Length -->
+<div class="space-y-3">
+<label class="font-label-md text-label-md text-on-surface-variant block mb-2">Target Length</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="py-2 px-3 rounded-md border border-white/10 text-on-surface-variant font-body-sm text-body-sm hover:bg-white/5 transition-colors">Concise</button>
+<button class="py-2 px-3 rounded-md border border-primary/40 bg-primary/10 text-primary font-body-sm text-body-sm transition-colors">Standard</button>
+<button class="py-2 px-3 rounded-md border border-white/10 text-on-surface-variant font-body-sm text-body-sm hover:bg-white/5 transition-colors">Extensive</button>
+</div>
+</div>
+<!-- Compliance Level -->
+<div class="space-y-3 pt-4 border-t border-white/5">
+<div class="flex items-center justify-between">
+<div>
+<label class="font-label-md text-label-md text-on-surface block">Strict Compliance Checking</label>
+<span class="font-body-sm text-body-sm text-on-surface-variant opacity-70">Cross-reference against ISO standards</span>
+</div>
+<button class="w-10 h-6 bg-primary rounded-full relative transition-colors duration-300">
+<span class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300"></span>
+</button>
+</div>
+</div>
+</div>
+<button class="w-full py-3 rounded-lg bg-white/5 border border-white/10 text-on-surface font-body-sm text-body-sm hover:bg-white/10 transition-colors mt-auto">
+                        Save Preset
+                    </button>
+</section>
+<!-- Right Panel: Live Preview Editor -->
+<section class="lg:col-span-8 glass-card rounded-xl flex flex-col h-[600px] overflow-hidden border-t-2 border-t-primary/50 relative">
+<!-- Editor Header -->
+<div class="bg-surface-container-low border-b border-white/5 px-4 py-3 flex items-center justify-between z-10">
+<div class="flex items-center gap-3">
+<div class="flex gap-1.5">
+<div class="w-3 h-3 rounded-full bg-white/20"></div>
+<div class="w-3 h-3 rounded-full bg-white/20"></div>
+<div class="w-3 h-3 rounded-full bg-white/20"></div>
+</div>
+<div class="h-4 w-px bg-white/10 mx-2"></div>
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-primary animate-pulse-violet" style="font-size: 16px;">bolt</span>
+                                Generating Proposal_v1.md
+                            </span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-1.5 rounded-md hover:bg-white/10 text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span>
+</button>
+<button class="p-1.5 rounded-md hover:bg-white/10 text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">download</span>
+</button>
+</div>
+</div>
+<!-- Editor Body (Shimmering State) -->
+<div class="flex-1 bg-[#0A0A0A] p-6 overflow-y-auto font-body-md text-body-md text-on-surface-variant leading-relaxed relative">
+<!-- Line Numbers (Faux) -->
+<div class="absolute left-0 top-0 bottom-0 w-10 bg-surface-container-lowest/50 border-r border-white/5 py-6 flex flex-col items-center text-xs text-on-surface-variant/30 font-mono select-none">
+<span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+</div>
+<div class="pl-8 space-y-4 max-w-3xl">
+<!-- Generated Text -->
+<h1 class="text-on-surface font-headline-md text-headline-sm mb-4">Executive Summary</h1>
+<p>This proposal outlines a comprehensive architecture for the enterprise data lake implementation, specifically engineered to meet the robust scalability and low-latency requirements detailed in the RFP.</p>
+<!-- Shimmering Loading Lines -->
+<div class="space-y-2 mt-6">
+<div class="h-4 w-full rounded shimmer-line"></div>
+<div class="h-4 w-11/12 rounded shimmer-line delay-75"></div>
+<div class="h-4 w-4/5 rounded shimmer-line delay-150"></div>
+</div>
+<h2 class="text-on-surface font-headline-sm text-body-lg mt-8 mb-3">Technical Approach</h2>
+<div class="space-y-2">
+<div class="h-4 w-full rounded shimmer-line delay-200"></div>
+<div class="h-4 w-full rounded shimmer-line delay-300"></div>
+<div class="h-4 w-3/4 rounded shimmer-line delay-500"></div>
+</div>
+</div>
+<!-- Status Overlay Footer -->
+<div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none flex items-end justify-center h-32">
+<div class="bg-surface/80 backdrop-blur-md border border-primary/20 rounded-full px-4 py-2 flex items-center gap-3 shadow-[0_0_15px_rgba(208,188,255,0.1)]">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse-violet"></div>
+<span class="font-label-md text-label-md text-primary-fixed-dim">AI Processing Context... 64%</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+</body></html>
