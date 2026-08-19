@@ -332,6 +332,7 @@ export default function Home() {
           setExtractedMeta(data.extracted_metadata);
           toast.success("RFP parsed: key requirements extracted");
         } else {
+          setExtractedMeta(null);
           toast.info("RFP uploaded successfully");
         }
       } else {
@@ -495,14 +496,19 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex items-center gap-4">
-                {extractedMeta && (
+                {uploadDone && (
                   <button 
                     onClick={applyAutofill} 
-                    disabled={autofilling}
-                    className="px-3 py-1.5 rounded-md bg-[#18181b] hover:bg-[#222226] border border-[#27272a] text-zinc-200 font-medium text-[11px] transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
+                    disabled={autofilling || !extractedMeta}
+                    title={!extractedMeta ? "AI Quota Exceeded during upload. Please wait 1 min and re-upload to use Auto-Fill." : "Extract strategic parameters from the uploaded RFP"}
+                    className={`px-3 py-1.5 rounded-md border text-[11px] font-medium transition-colors inline-flex items-center gap-1.5 shadow-sm ${
+                      !extractedMeta 
+                        ? "bg-[#1f1f22] border-[#27272a] text-[#52525b] cursor-not-allowed" 
+                        : "bg-[#18181b] hover:bg-[#222226] border-[#27272a] text-zinc-200 cursor-pointer"
+                    }`}
                   >
-                    <Wand2 size={12} className={autofilling ? "animate-spin text-[#d4d4d8]" : "text-[#a1a1aa]"} />
-                    <span>{autofilling ? "Applying..." : "Auto-Fill Matrix"}</span>
+                    <Wand2 size={12} className={autofilling ? "animate-spin" : ""} />
+                    <span>{!extractedMeta ? "Auto-Fill (Quota Exceeded)" : autofilling ? "Applying..." : "Auto-Fill Matrix"}</span>
                   </button>
                 )}
                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Step 02</span>
