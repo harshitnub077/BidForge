@@ -12,10 +12,12 @@ router = APIRouter(prefix="/rfp", tags=["RFP"])
 def process_embeddings_in_background(safe_text: str, org_id: str, document_id: str, token: str):
     """Background worker to chunk and embed documents so the upload response is fast."""
     try:
+        import time
         chunks = [safe_text[i:i+1000] for i in range(0, len(safe_text), 1000)]
         for chunk in chunks:
             embedding = ai_service.generate_embedding(chunk)
             vector_db.store_embedding(org_id, document_id, chunk, embedding, token)
+            time.sleep(4) # Protect Gemini Free Tier limit (15 RPM)
         print(f"Background embedding completed for doc {document_id}: {len(chunks)} chunks.")
     except Exception as e:
         print(f"Background embedding error for doc {document_id}: {e}")
@@ -68,11 +70,14 @@ async def upload_rfp(
             suffix = f".{file.filename.split('.')[-1]}"
             with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
                 temp_file.write(content)
+                temp_file.flush()
                 temp_path = temp_file.name
                 
             try:
+                print(f"DEBUG: File size is {len(content)} bytes")
                 result = md.convert(temp_path)
                 extracted_text = result.text_content
+                print(f"DEBUG: MarkItDown extracted {len(extracted_text if extracted_text else '')} chars")
             finally:
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
@@ -81,7 +86,7 @@ async def upload_rfp(
             extracted_text = content.decode('utf-8')
             
         if not extracted_text or not extracted_text.strip():
-            raise HTTPException(status_code=400, detail="Could not extract text from file (may be scanned image).")
+            raise HTTPException(status_code=400, detail=f"Could not extract text from file. File size: {len(content)} bytes.")
             
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"File parsing failed: {str(e)}")
