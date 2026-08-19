@@ -16,6 +16,9 @@ def process_embeddings_in_background(safe_text: str, org_id: str, document_id: s
         chunks = [safe_text[i:i+1000] for i in range(0, len(safe_text), 1000)]
         for chunk in chunks:
             embedding = ai_service.generate_embedding(chunk)
+            if not any(embedding): # All zeroes means failure
+                print(f"Aborting background embedding for {document_id} due to AI error (likely 429 Quota Exhausted).")
+                break
             vector_db.store_embedding(org_id, document_id, chunk, embedding, token)
             time.sleep(4) # Protect Gemini Free Tier limit (15 RPM)
         print(f"Background embedding completed for doc {document_id}: {len(chunks)} chunks.")
