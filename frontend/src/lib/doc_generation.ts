@@ -39,20 +39,53 @@ export const generatePdf = async (elementId: string, filename: string = "Proposa
     return window.print(); // Fallback to native print
   }
 
-  // Basic safe CSS for the PDF
+  // Basic safe CSS for the PDF - Professional White Background & Black Text
   const safeCSS = `
-    body { font-family: system-ui, sans-serif; color: #111; line-height: 1.6; padding: 20px; font-size: 14px; }
-    h1, h2, h3 { color: #000; font-weight: 600; margin-top: 1.5em; margin-bottom: 0.75em; }
-    h1 { font-size: 24px; }
-    h2 { font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
-    h3 { font-size: 16px; }
-    p { margin-bottom: 1em; }
-    ul { margin-bottom: 1em; padding-left: 24px; }
-    li { margin-bottom: 4px; }
-    table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: 12px; }
-    th, td { padding: 8px 12px; border: 1px solid #ccc; text-align: left; }
-    th { background-color: #f5f5f5; font-weight: bold; }
-    .watermark { margin-top: 40px; font-size: 10px; color: #888; text-align: center; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    
+    * { box-sizing: border-box; }
+    body { 
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
+      color: #111827; /* Dark almost black text */
+      background-color: #ffffff; /* Strictly white background */
+      line-height: 1.6; 
+      padding: 40px; 
+      font-size: 14px; 
+    }
+    
+    /* Force text inside to be dark, overriding any dark mode styles from UI */
+    body * { color: #111827; }
+    
+    h1, h2, h3, h4 { color: #000 !important; font-weight: 700; margin-top: 1.5em; margin-bottom: 0.75em; }
+    h1 { font-size: 28px; border-bottom: 2px solid #111; padding-bottom: 10px; }
+    h2 { font-size: 22px; border-bottom: 1px solid #eaeaea; padding-bottom: 5px; }
+    h3 { font-size: 18px; }
+    p { margin-bottom: 1.2em; color: #3f3f46 !important; }
+    ul, ol { margin-bottom: 1.2em; padding-left: 24px; }
+    li { margin-bottom: 6px; color: #3f3f46 !important; }
+    strong, b { font-weight: 600; color: #000 !important; }
+    
+    /* Professional Tables */
+    table { width: 100%; border-collapse: collapse; margin: 2em 0; font-size: 12px; }
+    th, td { padding: 12px 16px; border: 1px solid #e4e4e7 !important; text-align: left; }
+    th { background-color: #f4f4f5 !important; font-weight: 600; color: #000 !important; }
+    
+    /* Blockquotes (for Win Score Analysis) */
+    blockquote { 
+      border-left: 4px solid #3b82f6 !important; 
+      background-color: #eff6ff !important; 
+      padding: 16px 20px; 
+      margin: 1.5em 0; 
+      border-radius: 0 8px 8px 0;
+    }
+    blockquote * { color: #1e3a8a !important; }
+    
+    /* Mermaid SVGs & other images */
+    svg { max-width: 100%; height: auto; }
+    svg text { fill: #000 !important; }
+    svg path, svg line { stroke: #333 !important; }
+    
+    .watermark { margin-top: 60px; font-size: 10px; color: #a1a1aa !important; text-align: center; border-top: 1px solid #f4f4f5; padding-top: 20px; }
   `;
 
   doc.open();
