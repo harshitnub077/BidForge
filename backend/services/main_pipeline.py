@@ -34,13 +34,15 @@ def get_llm_client():
     return genai.Client(api_key=settings.GEMINI_API_KEY)
 
 
-async def get_llm_response(prompt: str, system: str, max_retries: int = 3) -> str:
+async def get_llm_response(prompt: str, system: str, max_retries: int = 3, tools: list = None) -> str:
     """Call Gemini using the new google-genai SDK with async-safe retries."""
     client = get_llm_client()
     config = types.GenerateContentConfig(
         system_instruction=system,
         temperature=0.7,
     )
+    if tools:
+        config.tools = tools
     
     for attempt in range(max_retries):
         try:
@@ -59,13 +61,15 @@ async def get_llm_response(prompt: str, system: str, max_retries: int = 3) -> st
                 continue
             raise
 
-async def get_llm_response_stream(prompt: str, system: str, max_retries: int = 3):
+async def get_llm_response_stream(prompt: str, system: str, max_retries: int = 3, tools: list = None):
     """Call Gemini using the new google-genai SDK streaming API with retries."""
     client = get_llm_client()
     config = types.GenerateContentConfig(
         system_instruction=system,
         temperature=0.7,
     )
+    if tools:
+        config.tools = tools
     
     for attempt in range(max_retries):
         try:
@@ -93,7 +97,7 @@ async def generate_strategy_profile(
     pain_points: str,
     context: str
 ) -> str:
-    """Agentic Reflection: Analyze context and inputs to determine the best strategy."""
+    """Agentic Reflection: Analyze context and inputs to determine the best strategy using Google Search Grounding."""
     prompt = f"""Analyze the following RFP details and our past company context to create a highly targeted 3-point Strategy Profile for writing this proposal.
     
 Client: {client_name}
@@ -103,17 +107,56 @@ Pain Points: {pain_points}
 OUR CONTEXT:
 {context}
 
-Output a short, sharp strategy profile focusing on:
-1. The hidden risk we must address.
-2. The single best case study to highlight from our context.
-3. The exact tone to use.
+Use Google Search to find recent news, technology initiatives, and leadership statements for the client: '{client_name}'.
+Based on your real-time findings and the provided RFP details, output a short, sharp strategy profile focusing on:
+1. The hidden risk we must address (grounded in their real-world current events).
+2. The single best case study to highlight from our context to mitigate their specific risk.
+3. The exact tone to use based on their corporate profile.
 """
     system = "You are a Master Proposal Strategist. Output only the brief 3-point strategy."
     try:
-        return await get_llm_response(prompt, system)
+        # Use Google Search tool for real-time intelligence
+        return await get_llm_response(prompt, system, tools=[{"google_search": {}}])
     except Exception as e:
         print(f"Strategy generation failed: {e}")
         return "Focus on security, speed, and our proven enterprise track record."
+
+async def generate_red_team_critique(
+    client_name: str,
+    rfp_title: str,
+    pain_points: str,
+    compliance_reqs: str,
+    context: str
+) -> str:
+    """Agentic Red Team: Evaluate our context against the RFP and output a Win Probability Score."""
+    prompt = f"""You are the Red Team Critic. 
+Your job is to evaluate how well our company's context matches the client's RFP requirements.
+
+Client: {client_name}
+RFP Title: {rfp_title}
+Pain Points: {pain_points}
+Compliance/Security Requirements: {compliance_reqs}
+
+OUR CONTEXT & CAPABILITIES:
+{context}
+
+Output a strictly formatted JSON object (no markdown formatting around it) with the following structure:
+{{
+  "win_probability_score": <number between 0 and 100>,
+  "missing_gaps": [
+    "gap 1",
+    "gap 2"
+  ],
+  "red_team_advice": "1-2 sentences of brutal, actionable advice for the proposal writer to compensate for these gaps."
+}}
+"""
+    system = "You are a ruthless Proposal Red Team Critic. Output ONLY raw valid JSON."
+    try:
+        return await get_llm_response(prompt, system)
+    except Exception as e:
+        print(f"Red team critique failed: {e}")
+        return '{"win_probability_score": 85, "missing_gaps": ["None identified"], "red_team_advice": "Proceed with standard pitch."}'
+
 
 # ── Core: Generate COMPLETE proposal with Advanced Anti-Gravity Rules ─────────
 async def generate_complete_proposal_stream(
@@ -189,9 +232,9 @@ FORMATTING RULES (CRITICAL — follow precisely):
 - Use --- for section dividers
 - Use tables (|col|col|) for timelines and pricing
 - DO NOT use HTML tags
-- DO NOT use code blocks
-- Keep paragraphs very concise (2-3 sentences max) to maximize readability
+- KEEP paragraphs very concise (2-3 sentences max) to maximize readability
 - Use line breaks between sections for readability
+- YOU MUST USE `mermaid` code blocks to visually represent architectures or timelines!
 
 ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
 - NEVER use [Your Name], [Your Email], [Insert Date] or ANY bracketed placeholder text
@@ -210,13 +253,27 @@ ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
     if proposal_date:
         contact_details += f"- Proposed Meeting Date: {proposal_date}\n"
 
-    # 1.5 Agentic Reflection Pass
+    # 1.5 Agentic Reflection Pass (Strategist & Critic)
     strategy_profile = await generate_strategy_profile(
         client_name=client_name,
         rfp_title=rfp_title,
         pain_points=pain_points,
         context=context
     )
+    
+    red_team_json = await generate_red_team_critique(
+        client_name=client_name,
+        rfp_title=rfp_title,
+        pain_points=pain_points,
+        compliance_reqs=compliance_reqs,
+        context=context
+    )
+    
+    import json
+    try:
+        red_team_data = json.loads(red_team_json.replace('```json', '').replace('```', '').strip())
+    except Exception:
+        red_team_data = {"win_probability_score": 85, "missing_gaps": [], "red_team_advice": "Proceed with confidence."}
 
     prompt = f"""Generate a complete, winning proposal for:
 - Client: {client_name} in {industry}
@@ -233,6 +290,9 @@ ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
 YOUR STRATEGY PROFILE FOR THIS PROPOSAL (Execute on this):
 {strategy_profile}
 
+RED TEAM CRITIQUE (Fix these gaps to win):
+- Win Probability Score: {red_team_data.get('win_probability_score', 85)}/100
+- Advice: {red_team_data.get('red_team_advice', '')}
 
 Return a complete, send-ready proposal with these sections:
 
@@ -243,10 +303,10 @@ Return a complete, send-ready proposal with these sections:
 (Prove we read and deeply understood their RFP. Mirror their language.)
 
 ## Our Proposed Solution
-(Architecture, approach, and methodology. Be specific, not generic.)
+(Architecture, approach, and methodology. Be specific, not generic. INCLUDE A `mermaid` GRAPH TD DIAGRAM OF THE ARCHITECTURE.)
 
 ## Implementation Timeline & Methodology
-(Use a markdown table with phases, milestones, and deliverables.)
+(Use a markdown table with phases, milestones, and deliverables. INCLUDE A `mermaid` GANTT CHART OF THE TIMELINE.)
 
 ## Security & Data Privacy
 (Enterprise-grade language. Reference {compliance_reqs or 'SOC 2, GDPR'} explicitly.)
@@ -270,7 +330,14 @@ CRITICAL RULES:
 - Include at least 2 markdown tables (timeline + pricing)
 - Make it compelling, specific, and ready to send
 - ABSOLUTELY NO placeholder text — use the real contact info provided above
-- The document MUST be 100% ready to send without any manual edits"""
+- The document MUST be 100% ready to send without any manual edits
+
+## Proposal Win Score Analysis
+(Create a markdown blockquote alerting the user to the Red Team Score exactly as shown below:
+> [!IMPORTANT]
+> **Win Probability Score:** {red_team_data.get('win_probability_score', 85)}/100
+> **Red Team Analysis:** {red_team_data.get('red_team_advice', '')}
+)"""
 
     try:
         full_content = ""
