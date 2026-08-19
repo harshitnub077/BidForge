@@ -268,15 +268,16 @@ ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
     if proposal_date:
         contact_details += f"- Proposed Meeting Date: {proposal_date}\n"
 
-    # 1.5 Agentic Reflection Pass (Strategist & Critic)
-    strategy_profile = await generate_strategy_profile(
+    # 1.5 Agentic Reflection Pass (Strategist, Market Intel & Critic)
+    # Run all independent multi-agent analyses concurrently to slash waiting time!
+    strategy_task = generate_strategy_profile(
         client_name=client_name,
         rfp_title=rfp_title,
         pain_points=pain_points,
         context=context
     )
-    
-    red_team_json = await generate_red_team_critique(
+    market_intel_task = generate_market_intelligence(industry=industry)
+    red_team_task = generate_red_team_critique(
         client_name=client_name,
         rfp_title=rfp_title,
         pain_points=pain_points,
@@ -284,7 +285,9 @@ ABSOLUTELY CRITICAL — NO PLACEHOLDERS:
         context=context
     )
     
-    market_intel = await generate_market_intelligence(industry=industry)
+    strategy_profile, market_intel, red_team_json = await asyncio.gather(
+        strategy_task, market_intel_task, red_team_task
+    )
 
     import json
     try:
