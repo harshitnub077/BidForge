@@ -46,11 +46,10 @@ async def upload_rfp(
         
         if profile_resp.data and len(profile_resp.data) > 0:
             real_org_id = profile_resp.data[0]["org_id"]
-            if org_id != "default-org" and real_org_id != org_id:
-                raise HTTPException(status_code=403, detail="Not authorized for this organization")
+            # Always use the trusted org_id from the database profile
             org_id = real_org_id
         else:
-            print(f"WARNING: No profile found for user {current_user['user_id']}. Allowing upload.")
+            print(f"WARNING: No profile found for user {current_user['user_id']}. Allowing upload with provided org_id.")
     except HTTPException:
         raise
     except Exception as e:

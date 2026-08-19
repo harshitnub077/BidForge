@@ -54,8 +54,8 @@ async def generate_proposal(
         
         if profile_resp.data and len(profile_resp.data) > 0:
             real_org_id = profile_resp.data[0]["org_id"]
-            if real_org_id != req.org_id:
-                raise HTTPException(status_code=403, detail="Not authorized for this organization")
+            # Always use the trusted org_id from the database profile
+            req.org_id = real_org_id
         else:
             # Profile not found — user signed up before trigger was installed.
             # They are still JWT-authenticated; allow generation and log a warning.
