@@ -6,7 +6,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import Response
 from pydantic import BaseModel
 from core.auth import get_current_user
-from services.pdf_renderer import render_proposal_pdf
 
 router = APIRouter(prefix="/export", tags=["Export"])
 
@@ -29,6 +28,7 @@ async def export_pdf(
         raise HTTPException(status_code=400, detail="No content provided for PDF export.")
 
     try:
+        from services.pdf_renderer import render_proposal_pdf
         pdf_bytes = await render_proposal_pdf(
             markdown_content=req.markdown_content,
             client_name=req.client_name,

@@ -6,12 +6,11 @@ with native pagination, headers, footers, and a cover page.
 import io
 import asyncio
 import markdown2
-from weasyprint import HTML, CSS
 from datetime import datetime
 
 
 # ── Professional PDF CSS ─────────────────────────────────────────────────────
-PDF_CSS = CSS(string="""
+PDF_CSS_STRING = """
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 @page {
@@ -223,7 +222,7 @@ hr {
 
 /* ── Links ──────────────────────────────────────── */
 a { color: #2563eb; text-decoration: none; }
-""")
+"""
 
 
 def _build_cover_page(client_name: str, rfp_title: str, org_name: str, proposal_date: str = "") -> str:
@@ -285,8 +284,10 @@ async def render_proposal_pdf(
 
     # Render PDF in a thread to avoid blocking asyncio event loop
     def _render():
+        from weasyprint import HTML, CSS
+        pdf_css = CSS(string=PDF_CSS_STRING)
         html_doc = HTML(string=full_html)
-        return html_doc.write_pdf(stylesheets=[PDF_CSS])
+        return html_doc.write_pdf(stylesheets=[pdf_css])
 
     pdf_bytes = await asyncio.to_thread(_render)
     return pdf_bytes
