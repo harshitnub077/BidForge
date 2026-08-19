@@ -120,6 +120,7 @@ function UploadDropzone({ onUpload, status, uploadedFileName }: UploadDropzonePr
       onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
+      onClick={() => document.getElementById('file-upload-input')?.click()}
       className={cn(
         "relative w-full py-6 px-4 rounded-lg flex flex-col items-center justify-center transition-all duration-200 cursor-pointer border border-dashed text-center",
         isDragging 
